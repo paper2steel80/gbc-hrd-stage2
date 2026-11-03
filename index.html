@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Good Banking Corporation HRD 스캐폴딩 시스템 — Stage 2</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" as="style" crossorigin
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jetbrains-mono@1.0.6/css/jetbrains-mono.css">
+<style>
+  :root{
+    --bg:#EDF1F5;
+    --surface:#FFFFFF;
+    --ink:#161E2B;
+    --ink-soft:#4B586A;
+    --line:#D7DEE6;
+    --steel:#2C5C8A;
+    --steel-deep:#1C3E5E;
+    --amber:#D98E2B;
+    --amber-soft:#FBEBD2;
+    --green:#3E7D58;
+    --green-soft:#E1F0E6;
+    --red:#B0442E;
+    --radius:14px;
+    --mono:'JetBrains Mono', ui-monospace, monospace;
+    --sans:'Pretendard', -apple-system, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:var(--sans); line-height:1.62; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:980px; margin:0 auto; padding:28px 20px 80px;}
+
+  header.top{
+    display:flex; align-items:baseline; justify-content:space-between;
+    padding-bottom:18px; margin-bottom:22px; border-bottom:2px solid var(--steel-deep);
+  }
+  header.top .brand{display:flex; align-items:baseline; gap:10px;}
+  header.top .brand .mark{
+    font-family:var(--mono); font-size:12px; letter-spacing:.08em; color:#fff;
+    background:var(--steel-deep); padding:3px 8px; border-radius:5px;
+  }
+  header.top h1{font-size:19px; margin:0; font-weight:800; letter-spacing:-0.01em;}
+  header.top .stagepill{font-family:var(--mono); font-size:12px; color:var(--ink-soft);}
+
+  .id-gate{
+    background:var(--amber-soft); border:1px solid var(--amber); border-radius:var(--radius);
+    padding:14px 18px; margin-bottom:18px;
+  }
+  .id-gate-row{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+  .id-gate label{font-size:12.5px; color:var(--ink); display:flex; align-items:center; gap:6px; font-weight:600;}
+  .id-gate input{border:1px solid var(--line); border-radius:7px; padding:7px 10px; font-size:13.5px; width:130px;}
+  .id-gate .gate-status{font-size:12.5px; color:var(--red); font-weight:600;}
+  .id-gate.confirmed{background:var(--green-soft); border-color:var(--green);}
+  .id-gate.confirmed input{background:#fff;}
+  fieldset.locked-overlay{opacity:.4; pointer-events:none;}
+
+  .case-card{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    padding:22px 24px; margin-bottom:18px;
+  }
+  .case-card h2{margin:0 0 10px; font-size:16px; font-weight:800;}
+  .case-card p{margin:0 0 10px; font-size:14.5px; color:#233042;}
+  .case-card p:last-child{margin-bottom:0;}
+  .dilemma{
+    border-left:3px solid var(--amber); background:var(--amber-soft);
+    padding:12px 14px; border-radius:8px; font-size:14px; margin-top:10px;
+  }
+
+  .people{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:18px;}
+  .person{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    padding:16px;
+  }
+  .person .avatar{
+    width:44px; height:44px; border-radius:50%; background:#DEE9F2;
+    display:flex; align-items:center; justify-content:center;
+    font-size:24px; margin-bottom:10px;
+  }
+  .person h3{margin:0 0 2px; font-size:14.5px; font-weight:800;}
+  .person .role{font-size:12px; color:var(--ink-soft); margin-bottom:8px;}
+  .person .bg{font-size:12.5px; color:#3A4756; line-height:1.6; margin:0 0 10px;}
+  .person .voices{font-size:13px; color:#233042; border-top:1px dashed var(--line); padding-top:8px; margin-top:8px;}
+  .person .voices blockquote{margin:0 0 8px; padding-left:10px; border-left:2px solid var(--steel); font-style:italic;}
+
+  .stage-tabs{display:flex; gap:8px; margin-bottom:16px;}
+  .stage-tab{
+    flex:1; text-align:center; padding:10px 6px; border-radius:10px;
+    background:#DEE5EC; color:var(--ink-soft); font-weight:700; font-size:13px;
+    border:1px solid transparent; cursor:pointer; position:relative;
+  }
+  .stage-tab .sub{display:block; font-weight:500; font-size:11px; margin-top:2px;}
+  .stage-tab.active{background:var(--steel-deep); color:#fff;}
+  .stage-tab.done{background:var(--green-soft); color:var(--green); border-color:var(--green);}
+  .stage-tab.terminated{background:#FBE4E0; color:var(--red); border-color:var(--red);}
+  .stage-tab.locked{cursor:not-allowed; opacity:.55;}
+
+  .stage-grid{display:grid; grid-template-columns:1fr 260px; gap:16px; align-items:start;}
+  @media (max-width:760px){ .stage-grid{grid-template-columns:1fr;} .people{grid-template-columns:1fr;} }
+
+  .chat-panel{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    padding:20px; min-height:420px; display:flex; flex-direction:column;
+  }
+  .concept-title{font-size:13px; color:var(--ink-soft); font-family:var(--mono); margin-bottom:10px;}
+  .concept-title-row{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:2px;}
+  .concept-title-row .concept-title{margin-bottom:8px;}
+  button.ghost.small{padding:5px 10px; font-size:11.5px; border-radius:6px;}
+  .terminated-banner{
+    background:#FBE4E0; border:1px solid var(--red); color:var(--red);
+    padding:14px 16px; border-radius:10px; font-size:14px; font-weight:700; margin-top:14px;
+  }
+  .msg{max-width:88%; padding:12px 14px; border-radius:12px; font-size:14.5px; margin-bottom:12px; white-space:pre-wrap;}
+  .msg.ai{background:#EEF3F8; border:1px solid #D9E4EE; border-top-left-radius:3px; align-self:flex-start;}
+  .msg.student{background:var(--steel-deep); color:#fff; border-top-right-radius:3px; align-self:flex-end; margin-left:auto;}
+  .msg-row{display:flex;}
+  .composer{margin-top:auto; padding-top:14px; border-top:1px solid var(--line);}
+  textarea{
+    width:100%; min-height:78px; resize:vertical; border:1px solid var(--line); border-radius:10px;
+    padding:10px 12px; font-family:var(--sans); font-size:14px; outline:none;
+  }
+  textarea:focus{border-color:var(--steel);}
+  .composer-row{display:flex; justify-content:space-between; align-items:center; gap:8px; margin-top:8px;}
+  .charcount{font-size:11.5px; color:var(--ink-soft); font-family:var(--mono);}
+  .charcount.ok{color:var(--green); font-weight:700;}
+  button.primary{
+    background:var(--steel-deep); color:#fff; border:none; padding:9px 18px;
+    border-radius:8px; font-weight:700; font-size:13.5px; cursor:pointer;
+  }
+  button.primary:hover{background:var(--steel);}
+  button.ghost{
+    background:transparent; color:var(--ink-soft); border:1px solid var(--line);
+    padding:9px 14px; border-radius:8px; font-size:13px; cursor:pointer;
+  }
+  button:disabled{opacity:.5; cursor:not-allowed;}
+
+  .readout{
+    background:var(--steel-deep); color:#EAF1F8; border-radius:var(--radius);
+    padding:16px; font-family:var(--mono); position:sticky; top:16px;
+  }
+  .readout .label{font-size:10.5px; letter-spacing:.08em; color:#9FB6CB; text-transform:uppercase;}
+  .readout .level-badge{
+    font-size:34px; font-weight:800; margin:2px 0 4px; display:flex; align-items:baseline; gap:6px;
+  }
+  .readout .level-badge .of{font-size:13px; color:#9FB6CB;}
+  .readout .bar{height:6px; background:#294D6E; border-radius:4px; overflow:hidden; margin:10px 0 16px;}
+  .readout .bar-fill{height:100%; background:var(--amber); width:0%; transition:width .4s ease;}
+  .readout .concept-list{list-style:none; padding:0; margin:0; font-size:12px;}
+  .readout .concept-list li{
+    display:flex; align-items:center; gap:8px; padding:6px 0; border-bottom:1px solid #26466A; color:#C4D5E5;
+  }
+  .readout .concept-list li:last-child{border-bottom:none;}
+  .readout .dot{width:8px; height:8px; border-radius:50%; background:#3E5C7C; flex-shrink:0;}
+  .readout .concept-list li.hit .dot{background:#6FE0A0;}
+  .readout .concept-list li.hit{color:#fff;}
+
+  .complete-banner{
+    background:var(--green-soft); border:1px solid var(--green); color:var(--green);
+    padding:14px 16px; border-radius:10px; font-size:14px; font-weight:700; margin-top:14px;
+    display:flex; justify-content:space-between; align-items:center; gap:10px;
+  }
+  .complete-banner button{background:var(--green); color:#fff; border:none; padding:8px 14px; border-radius:7px; font-size:13px; cursor:pointer; font-weight:700;}
+
+  .final-screen{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:26px; text-align:center;}
+  .final-screen h2{font-size:20px; margin-top:0;}
+  .idbox{display:flex; gap:8px; justify-content:center; margin:16px 0;}
+  .idbox input{border:1px solid var(--line); border-radius:8px; padding:9px 12px; font-size:14px; width:220px;}
+  #submitStatus{font-size:13px; color:var(--ink-soft); margin-top:10px; font-family:var(--mono);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="brand">
+      <span class="mark">GBC · HRD-ITS</span>
+      <h1>Good Banking Corporation HRD 학습 시스템</h1>
+    </div>
+    <span class="stagepill">Stage 2 — 역량체계·경력개발·조직성과·학습전이·조직학습</span>
+  </header>
+
+  <section class="id-gate" id="idGate">
+    <div class="id-gate-row">
+      <label>이름 <input id="gateName" type="text" placeholder="예: 홍길동"></label>
+      <label>학번 <input id="gateNumber" type="text" placeholder="예: 2026001"></label>
+      <button class="primary" id="gateConfirmBtn" type="button">확인하고 시작하기</button>
+      <span id="gateStatus" class="gate-status"></span>
+    </div>
+  </section>
+
+  <section class="case-card">
+    <h2>산업 배경</h2>
+    <p>Good Banking Corporation(GBC)은 5년째 "미래금융리더 육성프로그램"을 운영해온 종합은행이다. 기업 고객을 상대하는 기업금융 부문과 개인 고객을 상대하는 개인금융 부문을 모두 갖추고 있으며, 이 프로그램은 두 부문의 우수 인력을 선발해 리더십·전략적 사고 역량을 키우는 6개월짜리 교육과정으로, 회사는 이를 대표적인 인재육성 성공 사례로 꾸준히 홍보해왔다. 참가자들의 역량평가 점수는 해마다 오르고, 교육 만족도 조사에서도 늘 높은 점수를 받아왔기 때문이다.</p>
+    <p>문제는 이 "성공"이 숫자로 뒷받침되지 않는다는 데 있다. HRD팀 이인사가 이번 분기 정기 데이터 점검 중 발견한 바에 따르면, 프로그램 수료자가 많이 배치된 지점일수록 고객만족도나 수익성이 더 높아야 할 것 같은데도, 실제로는 그런 경향이 거의 나타나지 않는다. 개인의 역량 점수는 분명히 오르고 있는데, 그 성장이 지점의 실제 성과로는 이어지지 않고 있다.</p>
+    <div class="dilemma">
+      <strong>핵심 딜레마 —</strong> 경영진은 이 프로그램에 계속 투자해야 하는지를 묻고 있고, HRD팀 인재개발성과분석 담당 이인사는 이 질문에 답할 자료를 준비해야 한다. 그는 프로그램 수료자들을 인터뷰하기 시작하는데, 15년차 기업금융팀장 김신한과 3년차 개인금융팀 행원 박하나의 이야기를 들으면서 문제가 한 겹이 아니라는 걸 알게 된다. 두 사람은 같은 프로그램을 들었지만, 전혀 다른 이유로 그 배움이 회사에 남지 못하고 있었다. 이인사는 조직이 개인에게 부여한 학습프로그램이 조직의 성과로 왜 이어지지 않는지를 진단해야 한다.
+    </div>
+  </section>
+
+  <section class="people">
+    <div class="person" data-person="1">
+      <div class="avatar">👩‍💼</div>
+      <h3>이인사</h3>
+      <div class="role">HRD팀 인재개발성과분석 담당 · 32세</div>
+      <p class="bg">GBC에 입사한 지 6년 된 HRD 담당자로, 원래는 채용 업무를 하다가 2년 전 인재개발성과분석팀으로 옮겼다. 숫자와 사람 이야기를 둘 다 다뤄야 하는 자리라 처음엔 낯설었지만, 지금은 "왜"를 파고드는 이 일이 자신에게 잘 맞는다고 느낀다. 이번 분기 데이터를 정리하던 중 프로그램 수료자 비율과 지점 성과지표 사이에 뚜렷한 상관관계가 없다는 걸 발견했고, 몇 번이나 다시 계산했지만 결과는 같았다. 이 발견을 보고서로 정리하려던 중, 그는 우연히 3년 전 작성된 내부 검토 문서를 찾아냈다 — 지금과 거의 같은 문제 제기가 그때도 있었지만, 결국 프로그램 명칭 일부만 바뀐 채 흐지부지됐다는 사실을 알게 되면서, 이 문제가 생각보다 훨씬 오래된 것임을 깨닫는다.</p>
+      <div class="voices">
+        <blockquote>"처음엔 제가 계산을 잘못했나 싶어서 세 번을 다시 봤어요. 근데 진짜 이상한 건 그다음이었어요. 3년 전 문서를 찾았는데, 그때도 똑같은 지적이 있었더라고요. 그런데 그때 결론이 뭐였는지 아세요? 프로그램 이름 한 글자 바꾸고 끝이었어요."</blockquote>
+        <blockquote>"우리가 같은 질문을 5년 동안 두 번째로 하고 있다는 게, 저는 그게 제일 무서워요."</blockquote>
+      </div>
+    </div>
+    <div class="person" data-person="2">
+      <div class="avatar">👨‍💼</div>
+      <h3>김신한</h3>
+      <div class="role">기업금융팀 팀장(대출·상담) · 15년차, 프로그램 1기 수료자 · 41세</div>
+      <p class="bg">대학 졸업 후 줄곧 기업 고객을 상대해온 베테랑으로, 소규모 제조업체 사장님부터 스타트업 대표까지 다양한 회사의 자금 사정과 사업 계획을 듣고 대출을 설계해주는 일을 15년째 하고 있다. 5년 전 프로그램 1기로 선발됐을 때는 회사가 자신을 인정해준 것 같아 기뻤고, 리더십 코칭과 전략적 의사결정 교육을 들으며 배운 것도 많다고 느꼈다. 문제는 지점으로 돌아온 뒤 시작됐다 — 배운 걸 팀 회의에서 시도해보려 하면 지점장은 "예전 방식이 이미 검증된 방식이니 굳이 바꾸지 말라"는 반응을 보였고, 동료 팀장들도 "그런 거 배워봤자 실적에 도움 안 된다"는 분위기를 은근히 풍겼다. 몇 번은 혼자서 시도해봤지만, 아무도 지지해주지 않는 시도는 오래가지 못했다. 최근엔 스스로에게 "나는 정말 관리자가 되고 싶었던 걸까, 아니면 그냥 이 일을 더 잘하고 싶었던 걸까"라는 질문도 던지고 있다.</p>
+      <div class="voices">
+        <blockquote>"지점에 돌아와서 회의 때 새로운 방식을 한번 제안해봤더니, 지점장님이 '검증된 방식 놔두고 왜 그러냐'고 하시더라고요. 옆 팀장들도 대놓고 말은 안 해도 표정으로 알겠더라고요."</blockquote>
+        <blockquote>"저는 사실 팀을 관리하는 것보다 고객 한 분 한 분의 상황에 맞는 대출을 찾아드리는 일 자체가 더 좋거든요. 근데 이 프로그램은 계속 저를 '더 높은 관리자 자리'로만 밀어붙이는 것 같아요."</blockquote>
+      </div>
+    </div>
+    <div class="person" data-person="3">
+      <div class="avatar">👩‍💻</div>
+      <h3>박하나</h3>
+      <div class="role">개인금융팀 행원(창구 업무) · 3년차, 최근 수료자 · 27세</div>
+      <p class="bg">대학에서 경영학을 전공하고 GBC에 입사해 줄곧 개인 고객을 상대하는 창구 업무를 맡아왔다. 예금·적금 상담부터 개인 대출 안내까지, 하루에도 수십 명의 고객을 만난다. 입사 3년 차에 프로그램 대상자로 선발됐을 때 동기들 사이에서 부러움을 샀고, 본인도 큰 기대를 안고 참여했다. 그런데 교육에서 다룬 "글로벌 시장 감각", "전략적 의사결정" 같은 내용들이 정작 매일 하는 창구 업무와 어떻게 연결되는지 스스로도 설명하기 어려웠다. 승진 심사 기준에도 이 프로그램 수료 여부가 명시적으로 반영되지 않는다는 걸 알게 된 후로는, 이 6개월이 자신의 커리어에 어떤 의미였는지 점점 확신이 없어졌다. 최근 들어 이 경력이 GBC 안에서는 갈 곳이 마땅치 않아도, 외국계 은행이나 핀테크 기업으로 옮기는 데는 오히려 도움이 될 수 있겠다는 생각을 하기 시작했다. 아직은 팀 동료에게도, 이인사에게도 이 생각을 말한 적이 없다.</p>
+      <div class="voices">
+        <blockquote>"교육 때 배운 내용은 좋았어요. 근데 저는 매일 창구에서 고객 응대하고 서류 처리하는 일을 하는데, 그 내용이 제 업무에서 언제 쓰이는 건지 잘 모르겠어요. 승진 심사표를 봤는데 이 프로그램 얘기가 따로 없더라고요."</blockquote>
+        <blockquote>"사실 요즘은 다른 생각도 들어요. 여기서는 못 써도, 밖에서는 이 경력이 쓸모 있지 않을까 하는. 아직 누구한테도 말한 적은 없어요."</blockquote>
+      </div>
+    </div>
+  </section>
+
+  <nav class="stage-tabs" id="stageTabs">
+    <div class="stage-tab active" data-stage="A">2-A<span class="sub">역량체계·경력개발</span></div>
+    <div class="stage-tab locked" data-stage="B">2-B<span class="sub">학습전이</span></div>
+    <div class="stage-tab locked" data-stage="C">2-C<span class="sub">조직성과·조직학습</span></div>
+  </nav>
+
+  <div id="stageArea"></div>
+
+</div>
+
+<script>
+/* =========================================================
+   1) 케이스 상황연결 키
+   ========================================================= */
+const COOC_NAMES = ['이인사','김신한','박하나'];
+function normalize(t){ return (t||'').toLowerCase(); }
+function hasCooc(text){
+  const n = normalize(text);
+  return COOC_NAMES.some(x => n.includes(x.toLowerCase()));
+}
+function detectConcept(text, concept){
+  const norm = normalize(text);
+  for(const kw of concept.keywords){
+    const kwNorm = kw.toLowerCase();
+    const idx = norm.indexOf(kwNorm);
+    if(idx !== -1){
+      const s = Math.max(0, idx-10), e = Math.min(norm.length, idx+kwNorm.length+10);
+      const win = norm.slice(s,e);
+      const neg = (concept.negations||[]).some(x=>win.includes(x));
+      if(!neg) return true;
+    }
+  }
+  return false;
+}
+const SOLUTION_WORDS = ['설계','제안','제도','방안','만들','도입','운영','트랙','체계','필요','해야','되어야','방법','마련','구축','반영','바꾸','재설계','개선','추진','수립','정리해야','제시'];
+function hasSolutionIntent(text){
+  const n = normalize(text);
+  return SOLUTION_WORDS.some(w=>n.includes(w));
+}
+const IDK_PATTERNS = ['모르겠','글쎄','패스','몰라요','모름','모르곘','노답','그냥요'];
+function isLowEffort(text){
+  const t = (text||'').trim();
+  if(t.length < 6) return true;
+  const n = normalize(t);
+  return IDK_PATTERNS.some(p=>n.includes(p));
+}
+const MIN_ANSWER_LENGTH = 20; // Stage 1과 동일한 최소 길이 — "성의 있는 답변"의 최소선일 뿐, 200자는 목표 분량이지 강제 기준이 아님
+function isTooShort(text){
+  return (text||'').trim().length < MIN_ANSWER_LENGTH;
+}
+const OFFTOPIC_PATTERNS = [
+  '너는 누구','넌 누구','너 누구','넌 뭐야','너 뭐야','정체가 뭐','너의 정체',
+  '네가 다 답','답을 다 말해','정답을 말해','답을 알려줘','답 알려줘','정답 알려줘',
+  '노래','잘해?','잘하니','재밌는 얘기','심심해','너 몇 살','너 나이',
+  '너 남자','너 여자','좋아하는 음식','너의 취미','너 애인','너 사랑'
+];
+function isOffTopic(text){
+  const n = normalize(text);
+  return OFFTOPIC_PATTERNS.some(p=>n.includes(p));
+}
+function offTopicReply(key, count){
+  const firstLine = STAGES[key].start.split('\n')[0];
+  let msg = `이 케이스와 관련 없는 이야기네요. 다시 GBC 사례로 집중해볼까요?\n\n${firstLine}`;
+  if(count === 2){
+    msg += `\n\n⚠ 이런 이탈이 한 번 더 반복되면 이 사례검토는 종료되고 0점으로 기록됩니다.`;
+  }
+  return msg;
+}
+
+/* =========================================================
+   2) 개념 클러스터 (Stage2 키워드클러스터 마스터 반영)
+   ========================================================= */
+const CLUSTERS = {
+  A: [
+    {id:'competency', label:'Competency (역량)',
+     keywords:['competency','competence','역량','역량개념','고성과자','우수성과자','행동특성','컴피턴시','컴피턴씨',
+       '고성과자와 평균성과자','성과를 내는 사람의 공통','일 잘하는 사람들의 특징','성과 차이를 만드는','잘하는 사람과 못하는 사람의 차이',
+       '우수한 사람들에게 공통적으로','뛰어난 직원들의 특성','성과가 좋은 사람들이 가진'],
+     negations:['상관없','경쟁력과 무관'],
+     guide:'역량은 "우수 성과자와 평균 성과자의 행동을 비교해서" 정의해야 합니다. GBC의 역량 목록은 이런 비교 과정을 거쳤을까요? 이 점을 답변에 넣어보시겠어요?',
+     answer:'GBC의 역량 목록은 우수성과자와 평균성과자의 행동을 비교하는 절차 없이, 임원 인터뷰 6번만으로 만들어졌습니다. 그래서 Competency의 정의(McClelland, 1973)에 맞지 않는 방식으로 설계된 것입니다.'},
+    {id:'iceberg', label:"Spencer & Spencer's Competency Iceberg Model",
+     keywords:['spencer','competency iceberg','역량빙산모델','빙산모델','수면 위','수면 아래','자기개념','아이스버그',
+       '겉으로 보이는 부분과 안 보이는','드러나지 않는 자질','눈에 안 보이는 동기','표면적인 것과 내면적인 것','겉으로 드러나는 스킬과 숨겨진',
+       '겉모습과 속마음','보이는 능력과 안 보이는 성향'],
+     negations:['안 맞','상관없'],
+     guide:'역량은 겉으로 보이는 지식·스킬(수면 위)과, 겉으로 안 보이는 자기개념·동기·가치(수면 아래)로 나뉩니다. 김신한이나 박하나가 "보이지 않는" 어떤 자질을 갖고 있을까요?',
+     answer:'김신한은 겉으로 드러나지 않는 자기개념·동기(수면 아래) 영역에서 전문성을 지향하는 사람이고, 박하나는 아직 그 부분이 뚜렷이 드러나지 않은 상태입니다.'},
+    {id:'katz', label:'Katz의 계층별 역량',
+     keywords:['katz','conceptual skill','human skill','technical skill','개념적역량','대인관계역량','실무처리역량','카츠','캐츠','컨셉츄얼',
+       '직급마다 다른 역량','직급별로 필요한 능력이 다르','임원과 실무자는 필요역량이 다르','계층에 따라 요구되는 능력',
+       '관리자급과 실무자급의 역량','직위에 따라 필요한 역량','직책마다 요구되는 능력이 다르'],
+     negations:['다 똑같','차이는 없'],
+     guide:'경영층은 개념적 역량, 중간관리자는 대인관계 역량, 실무자는 실무처리 역량이 상대적으로 더 필요합니다. 김신한은 지금 어떤 계층에 있고, 그 계층에 정말 필요한 역량은 무엇일까요?',
+     answer:'김신한은 실무자에 가까운 위치에서 실무처리 역량을 원하는데, 프로그램은 그에게 중간관리자에게 필요한 대인관계 역량만 강조하고 있어 그의 계층에 맞지 않는 역량을 요구하고 있습니다.'},
+    {id:'holland', label:"Holland's RIASEC Theory",
+     keywords:['holland','riasec','흥미유형','현실형','탐구형','예술형','사회형','진취형','관습형','할랜드','홀랜드','리아섹',
+       '흥미와 직무의 불일치','좋아하는 일과 실제 업무가 다르','적성에 안 맞는 업무','흥미유형과 직무환경의 궁합','성향과 안 맞는 일',
+       '적성과 업무가 맞지 않'],
+     negations:['상관없','안 중요'],
+     guide:'개인의 흥미유형과 직업환경이 얼마나 맞는지가 경력만족을 좌우합니다. 박하나의 업무(창구 응대)와 그가 받은 교육(전략·글로벌) 사이에는 어떤 흥미유형 불일치가 있을까요?',
+     answer:'박하나가 배운 \'글로벌 감각\', \'전략적 의사결정\'은 그의 실제 업무(창구 응대)와 흥미유형 자체가 다른 영역이라, Holland의 관점에서 개인-환경 적합도가 낮습니다.'},
+    {id:'schein', label:"Schein's Career Anchor Theory",
+     keywords:['schein','career anchor','경력닻','경력정박','내적가치','전문성','기술전문성','관리역량','자율성','안정성','창의성','라이프스타일','샤인','앵커',
+       '포기할 수 없는 가치','자신이 정말 중요하게 여기는','경력에서 타협 못하는','핵심적으로 원하는 가치','절대 양보 못하는 부분',
+       '진짜 원하는 경력의 방향'],
+     negations:['안 맞','무관'],
+     guide:'사람마다 포기할 수 없는 경력의 핵심 가치(경력닻)가 다릅니다. 김신한은 8가지 경력닻(전문성·관리역량·자율성 등) 중 정확히 어떤 가치를 가진 사람일까요?',
+     answer:'김신한은 8가지 경력닻 중 전문성(Technical/Functional Competence) 닻을 가진 사람으로, 관리자 트랙보다 전문가로 성장하고 싶어합니다.'},
+    {id:'super', label:"Super's Life-Span, Life-Space Theory",
+     keywords:['super','life-span','life-space','생애주기','탐색기','확립기','성장기','유지기','쇠퇴기','수퍼','슈퍼','라이프스팬',
+       '아직 방향을 못 정한 단계','경력초기 탐색','아직 뭘 하고 싶은지 모르는','진로를 찾아가는 과정','경력 방향이 안 정해진',
+       '아직 진로를 정하지 못한','신입 단계','초입자','초년차','경력 초반','이제 막 시작한','아직 신입','신입',
+       '생애단계의 신입','초보 단계','경력이 얼마 안 된'],
+     negations:['무관','상관없'],
+     guide:'사람은 생애주기에 따라 성장기-탐색기-확립기-유지기-쇠퇴기를 거치며 경력에 대해 갖는 태도가 달라집니다. 3년차 박하나는 지금 어느 단계에 있다고 볼 수 있을까요?',
+     answer:'박하나는 아직 경력 방향을 정하지 못한 탐색기(Exploration, 입사 초기)에 해당하며, 다양한 경험이 필요한 시기입니다.'},
+    {id:'kram', label:"Kram's Relational Career Movement Model",
+     keywords:['kram','relational career','관계적경력이동','신뢰','멘토십','사회적자본','크램',
+       '선배와의 관계를 통한 성장','멘토의 도움으로 방향을','인맥을 통해 기회를','관계를 통한 경력 발전','선배와의 관계로 방향을 찾'],
+     negations:['상관없','필요없'],
+     guide:'신뢰·멘토십 같은 대인관계망이 경력이동을 좌우할 수 있습니다. 박하나가 GBC 안에서 방향을 못 찾고 있다면, 김신한 같은 선배와의 관계가 어떤 도움이 될 수 있을까요?',
+     answer:'박하나가 GBC 안에서 방향을 못 찾고 있다면, 김신한 같은 선배와 신뢰 기반의 관계를 맺는 것이 경력 탐색에 실질적인 도움이 될 수 있습니다.'}
+  ],
+  B: [
+    {id:'identical', label:'Theory of Identical Elements',
+     keywords:['identical elements','동일요소이론','동일요소','훈련과 업무가 똑같','손다이크','쏜다이크','아이덴티컬',
+       '훈련내용과 실제업무가 다름','배운 것과 실제 하는 일이 다르','교육내용이 업무와 무관','교육과 실무의 괴리','배운 내용이 현업과 안 맞'],
+     negations:['안 맞','상관없'],
+     guide:'훈련 내용과 실제 업무가 똑같을수록 전이가 잘 됩니다. 박하나가 배운 "글로벌 감각"이 실제 창구 업무와 얼마나 겹칠까요?',
+     answer:'박하나가 배운 \'글로벌 감각\'은 그의 실제 창구 업무와 내용이 거의 겹치지 않아, 훈련-업무 동일성이 낮은 경우입니다.'},
+    {id:'stimgen', label:'Stimulus Generalization Theory',
+     keywords:['stimulus generalization','자극일반화','일반원리','다양한 상황에 전이','far transfer','원격전이',
+       '일반적인 내용이라 응용이 어려운','너무 추상적인 내용','구체적이지도 일반적이지도 않은','애매한 내용이라 적용이 안 되'],
+     negations:['상관없','무관'],
+     guide:'일반원리를 가르치면 다양한 상황에 응용(전이)될 수 있습니다. 박하나가 배운 내용은 "구체적 절차"였을까요, "일반원리"였을까요, 아니면 둘 다 아니었을까요?',
+     answer:'박하나가 배운 내용은 구체적 절차도, 폭넓게 적용 가능한 일반원리도 아닌 애매한 수준이라 어느 쪽으로도 잘 전이되지 않았습니다.'},
+    {id:'cogtransfer', label:'Cognitive Theory of Transfer',
+     keywords:['cognitive theory of transfer','인지적전이','정보처리','인출능력','참고카드','체크리스트','의사결정나무','노에','noe',
+       '배운 걸 기억해내지 못함','실전에서 활용할 방법이 없음','참고할 자료가 없음','다시 떠올릴 수단이 없음','배운걸 꺼내쓰지 못함'],
+     negations:['무관','상관없'],
+     guide:'배운 것을 실제 상황에서 "꺼내쓰는" 인지적 도구(참고카드·체크리스트 등)가 있으면 전이가 쉬워집니다. 박하나에게 이런 도구가 있었을까요?',
+     answer:'박하나에게는 배운 내용을 실제 업무 상황에서 다시 꺼내 쓸 참고자료나 체크리스트 같은 인지적 도구가 없었습니다.'},
+    {id:'baldwinford', label:"Baldwin & Ford's Training Transfer Process Model",
+     keywords:['baldwin','ford','훈련전이과정모형','훈련생특성','훈련설계','업무환경','볼드윈','포드',
+       '환경이 뒷받침 안 됨','배운 걸 쓸 환경이 아님','훈련은 잘 됐지만 환경이','전이가 안 되는 이유가 환경'],
+     negations:['안 맞','상관없'],
+     guide:'전이는 훈련생특성·훈련설계·업무환경 3가지에 달려있습니다. 김신한은 이 중 어떤 요인에서 막혔을까요?',
+     answer:'김신한의 경우 훈련생 특성과 훈련설계 자체는 문제가 없었지만, 업무환경 요인에서 전이가 막혔습니다.'},
+    {id:'lte', label:'Learning Transfer Environment (LTE)',
+     keywords:['lte','learning transfer environment','학습전이환경','상사지원','동료지원','상사제재','변화개방성','성과피드백',
+       '상사나 동료의 지지가 없음','주변에서 도와주지 않음','조직 분위기가 안 도와줌','지지받지 못한 시도','상사가 반대함','동료들이 무관심함'],
+     negations:['상관없','무관'],
+     guide:'업무환경 요인을 더 세분화하면 상사지원·동료지원·변화개방성 등이 있습니다. 김신한의 지점장·동료 반응은 정확히 어떤 요소에 해당할까요?',
+     answer:'김신한은 지점장의 반대와 동료들의 무관심으로 상사지원·동료지원을 모두 받지 못해, 배운 내용을 시도하다 포기했습니다.'}
+  ],
+  C: [
+    {id:'paradigm', label:'성과 패러다임 vs. 학습 패러다임',
+     keywords:['성과패러다임','학습패러다임','patradigm','paradigm','자기실현','경제적 성과',
+       '학습자체를 목적으로 볼지','교육을 결과중심으로 볼지','성장 자체가 목적인지 수단인지'],
+     negations:['상관없'],
+     guide:'학습을 경제적 성과로 볼지, 자기실현으로 볼지에 따라 접근이 달라집니다. GBC는 그동안 어느 쪽 관점에 머물러 있었을까요?',
+     answer:'GBC는 그동안 학습을 경제적 성과보다 개인의 성장(학습 패러다임) 관점에서만 다뤄왔습니다.'},
+    {id:'easterbysmith', label:'Easterby-Smith et al.의 조직학습 6가지 관점',
+     keywords:['easterby-smith','이스터비스미스','조직학습 6가지 관점','심리적 관점','전략적 관점','생산관리적','문화인류학적',
+       '여러 학문적 시각으로 조직학습','한 가지 관점에만 갇혀','다양한 각도에서 바라보지 못한','만족도로만 판단'],
+     negations:['상관없','무관'],
+     guide:'조직학습은 심리적·경영과학적·전략적 등 여러 관점으로 볼 수 있습니다. GBC가 그동안 심리적 관점(만족도)에만 머물러 있었던 건 아닐까요?',
+     answer:'GBC는 조직학습을 심리적 관점(만족도)에서만 봐왔고, 전략적·생산관리적 관점에서는 점검한 적이 없습니다.'},
+    {id:'crossan4i', label:'Crossan et al.의 4I 모형',
+     keywords:['crossan','4i','직관','interpreting','integrating','institutionalizing','제도화','feed-forward','feedback','권력','크로산','크로슨',
+       '개인의 생각이 조직 전체 규칙으로','한 사람의 발견이 회사 매뉴얼이 되기까지','개인아이디어가 조직차원으로 퍼지는','개인 차원에서 조직 차원으로 확산'],
+     negations:['안 맞','무관'],
+     guide:'개인의 직관이 그룹의 해석·통합을 거쳐 조직 제도로 굳어지는 과정입니다. 이인사의 발견은 지금 이 과정의 어느 단계에 있고, 다음 단계로 가려면 무엇이 필요할까요?',
+     answer:'이인사의 발견은 아직 개인의 직관(Intuiting) 단계에 머물러 있으며, 김신한·박하나의 사례와 연결되어 해석(Interpreting)되고 조직 전체와 공유·통합(Integrating)된 뒤, 회사 매뉴얼로 제도화(Institutionalizing)되어야 진짜 변화로 이어집니다.'}
+  ]
+};
+
+/* =========================================================
+   3) 스테이지별 스크립트
+   ========================================================= */
+const STAGES = {
+  A: {
+    label:'Stage 2-A · 역량체계 + 경력개발',
+    start: `이인사는 '미래금융리더 육성프로그램'의 역량 목록이 임원 인터뷰 6번만으로 만들어졌다는 걸 알게 됐습니다. 그리고 김신한은 '이 프로그램이 나를 관리자로만 만들려 한다'고, 박하나는 '이 6개월이 내 경력에 무슨 의미인지 모르겠다'고 말합니다.
+
+여러분이 이인사라면, 역량 목록 문제와 두 사람의 경력 관련 고민을 각각 어떻게 진단하시겠습니까?
+
+아래 개념을 최소한 1개 이상 활용해 구체적으로 설명해 주세요.
+(Competency 개념, Spencer & Spencer's Competency Iceberg Model, Katz의 계층별 역량, Holland's RIASEC Theory, Schein's Career Anchor Theory, Super's Life-Span Life-Space Theory, Kram's Relational Career Movement Model)`,
+    levelMsg: {
+      1: `정확합니다. 역량에는 겉으로 보이는 것과 안 보이는 것이 있고, 계층마다 필요한 역량도 다릅니다. 이 두 가지를 더 구체적으로 설명해주시겠어요?`,
+      2: `좋습니다. 이제 김신한과 박하나의 경력 문제를 각각 어떤 이론으로 설명할 수 있을지, 두 사람을 구분해서 설명해주시겠어요?`,
+      3: `훌륭한 통합입니다. Stage 2-A를 완료합니다.`
+    },
+    hints: {
+      0: [
+        `역량 목록이 임원 인터뷰 6번만으로 만들어졌다는 것부터 짚어볼까요. 우수한 성과를 내는 사람의 공통된 행동 특성을 근거로 역량을 정의해야 한다는 개념이 있었는데, 떠오르시나요?`,
+        `힌트를 더 드릴게요 — 이 개념은 McClelland(1973)가 제안한 것으로, 역량(Competency)을 우수성과자와 평균성과자의 행동 차이로 정의합니다. GBC의 역량 목록이 이 정의를 따르고 있는지 생각해보시겠어요?`,
+        `조금 더 직접적으로 드릴게요 — "Competency"라는 용어를 답변에 넣고, GBC의 역량목록이 왜 이 정의에 맞지 않는지 한 문장으로 적어보세요.`
+      ],
+      1: [
+        `정확한 정의입니다. 그런데 역량에는 겉으로 보이는 것과 안 보이는 것이 있다고 했는데, 그 구분을 설명해볼 수 있을까요? 그리고 김신한이나 박하나의 상황과는 어떻게 연결될까요?`,
+        `힌트를 더 드릴게요 — Spencer & Spencer의 Competency Iceberg Model은 지식·스킬(수면 위)과 자기개념·동기(수면 아래)로 역량을 나눕니다. 계층마다 필요한 역량이 다르다는 Katz의 이론도 있었는데, 경영층·중간관리층·일반사원 각각에 어떤 역량이 필요할까요?`,
+        `조금 더 직접적으로 드릴게요 — "Iceberg Model"과 "Katz"라는 용어를 답변에 넣고, 계층별로 어떤 역량이 다른지 한 문장씩 적어보세요.`
+      ],
+      2: [
+        `좋은 진단입니다. 김신한은 '관리자가 되고 싶었던 게 아니다'라고 말했는데, 사람마다 포기할 수 없는 경력 가치가 다르다는 이론이 있었습니다. 김신한은 어떤 가치를 가진 사람일까요? 박하나는 또 어떤 상황인가요?`,
+        `힌트를 더 드릴게요 — Schein의 Career Anchor Theory는 8가지 경력닻(전문성, 관리역량, 자율성, 안정성 등)을 제시합니다. 박하나는 아직 경력 방향이 뚜렷하지 않은데, Super의 생애주기 이론에서 어느 단계에 있을까요?`,
+        `조금 더 직접적으로 드릴게요 — "Career Anchor"(김신한이 가진 닻 이름 포함)와 "생애단계"(박하나가 있는 단계) 두 가지를 모두 답변에 적어보세요.`
+      ]
+    },
+    weight: {0:0, 1:25, 2:60, 3:100},
+    needForLevel3: 3,
+    standardSummary: `GBC의 '미래금융리더 육성프로그램'은 임원 인터뷰만으로 역량 목록을 만들었는데, 이는 우수성과자와 평균성과자의 행동특성을 비교해 역량을 정의해야 한다는 Competency 개념(McClelland)과 Spencer & Spencer의 Competency Iceberg Model에 어긋나는 접근이었습니다. 여기에 더해 Katz의 계층별 역량 이론에 따르면 경영층은 개념적 역량, 중간관리층은 대인관계 역량, 실무자는 실무처리 역량이 상대적으로 더 필요한데, GBC의 역량목록은 이런 계층 구분 없이 모두에게 획일적으로 적용되고 있었습니다. 이 설계 결함은 두 사람에게 다른 방식으로 나타났습니다. 15년차 김신한은 Schein의 Career Anchor 중 전문성(Technical/Functional) 닻을 가진 사람인데도 프로그램이 그를 관리자 트랙으로만 밀어붙였고, 3년차 박하나는 Super의 생애단계 중 탐색기(Exploration)에 있으면서 아직 Holland의 흥미유형조차 뚜렷하지 않은데도 프로그램이 정해진 방향을 강요했습니다. 결국 역량체계 설계의 오류가 서로 다른 경력 단계에 있는 두 사람 모두에게 '맞지 않는 옷'을 입힌 것입니다.`
+  },
+  B: {
+    label:'Stage 2-B · 학습전이',
+    start: `김신한은 배운 내용을 팀 회의에서 시도해봤지만, 지점장은 '검증된 방식을 왜 바꾸냐'고 했고 동료 팀장들도 시큰둥한 반응을 보였습니다. 결국 그는 혼자 밀어붙일 힘을 잃었습니다. 박하나는 아예 배운 내용이 자신의 창구 업무와 무슨 관련이 있는지조차 찾지 못하고 있습니다.
+
+여러분이 이인사라면, 같은 프로그램을 듣고도 두 사람에게 '학습이 현장에서 살아남지 못한' 이유가 각각 무엇이라고 진단하시겠습니까?
+
+아래 개념을 최소한 1개 이상 활용해, 두 사람을 각각 짚어 설명해주세요.
+(Theory of Identical Elements, Stimulus Generalization Theory, Cognitive Theory of Transfer, Baldwin & Ford's Training Transfer Process Model, Learning Transfer Environment(LTE))`,
+    levelMsg: {
+      1: `정확합니다. 박하나가 배운 '글로벌 감각', '전략적 의사결정'은 훈련-업무 동일성 관점으로도, 일반원리 관점으로도 설명이 잘 안 되는데, 왜 그럴까요?`,
+      2: `좋습니다. 이제 김신한 쪽을 봅시다. 그는 배운 내용 자체는 이해했다고 말했으니, 박하나와는 다른 이론이 필요합니다. 어떤 이론으로 설명할 수 있을까요?`,
+      3: `훌륭한 통합입니다. Stage 2-B를 완료합니다.`
+    },
+    hints: {
+      0: [
+        `김신한과 박하나는 서로 다른 층위의 문제를 겪고 있습니다. 훈련 내용과 실제 업무가 얼마나 같은지, 또는 얼마나 일반화되는지를 다루는 이론부터 떠올려보시겠어요?`,
+        `힌트를 더 드릴게요 — Theory of Identical Elements(훈련-업무 동일성)와 Stimulus Generalization Theory(일반원리로의 확장) 두 이론입니다. 박하나가 배운 내용은 이 둘 중 어느 쪽에도 잘 맞지 않는데, 왜 그럴까요?`,
+        `조금 더 직접적으로 드릴게요 — "Identical Elements"와 "Stimulus Generalization" 두 용어를 답변에 넣고, 박하나의 상황과 연결해서 한 문장씩 적어보세요.`
+      ],
+      1: [
+        `정확합니다. Cognitive Theory of Transfer도 있었는데, 참고카드·체크리스트 같은 도구가 있었다면 박하나에게 달랐을까요? 그리고 이건 박하나의 경력방향 미정 문제와도 관련이 있어 보이는데, 어떻게 연결될까요?`,
+        `힌트를 더 드릴게요 — Cognitive Theory of Transfer는 학습자의 정보 인출 능력이 전이를 좌우한다고 봅니다. 박하나에게 이런 인지적 도구가 없었다는 점을 답변에 넣어보시겠어요?`,
+        `조금 더 직접적으로 드릴게요 — "Cognitive Theory of Transfer"라는 용어를 답변에 포함해보세요.`
+      ],
+      2: [
+        `좋습니다. 김신한은 배운 내용 자체는 이해했다고 말했으니, 박하나와는 다른 이론이 필요합니다. 훈련생특성·훈련설계·업무환경을 종합적으로 보는 모형이 있었는데, 김신한의 지점장·동료 반응은 이 중 어떤 요인에 해당할까요?`,
+        `힌트를 더 드릴게요 — Baldwin & Ford's Training Transfer Process Model의 업무환경 요인을 더 세분화한 Learning Transfer Environment(LTE)가 있습니다. 상사지원과 동료지원 중 김신한에게 부족했던 건 무엇일까요?`,
+        `조금 더 직접적으로 드릴게요 — "Baldwin & Ford"와 "LTE"(상사지원 또는 동료지원 부족) 두 가지를 모두 답변에 적어보세요.`
+      ]
+    },
+    weight: {0:0, 1:25, 2:60, 3:100},
+    needForLevel3: 3,
+    requirePairs: [['identical','stimgen'], ['baldwinford','lte']],
+    standardSummary: `김신한과 박하나는 같은 교육을 들었지만 전혀 다른 이유로 배움이 현장에 남지 못했습니다. 박하나의 경우는 Theory of Identical Elements와 Stimulus Generalization Theory 관점에서 설명되는데, 교육 내용(글로벌 감각, 전략적 의사결정)이 실제 업무(창구 고객응대)와 겹치지도 않고, 그렇다고 다양한 상황에 적용 가능한 일반원리로 추상화되지도 않은 애매한 내용이었기 때문입니다. 여기에 Cognitive Theory of Transfer가 말하듯, 배운 걸 실제 상황에서 꺼내쓸 참고자료나 도구도 없었고, 이는 아직 경력 방향 자체가 불분명한 박하나의 상황(Super의 탐색기)과 맞물려 더 큰 혼란으로 이어졌습니다. 김신한의 경우는 다릅니다 — Baldwin & Ford의 모델에서 말하는 훈련생 특성·훈련설계는 괜찮았지만, 업무환경 요인이 무너져 있었습니다. Learning Transfer Environment(LTE)로 보면 상사지원과 동료지원이 모두 부재했고, 그는 배운 내용을 이해했음에도 지지받지 못한 채 혼자 시도하다 포기했습니다. 그리고 지지받지 못한 학습은 박하나처럼 조직 이탈에 대한 고민으로까지 이어질 수 있다는 것을 이번 사례가 보여주고 있습니다.`
+  },
+  C: {
+    label:'Stage 2-C · 조직성과 + 조직학습',
+    start: `이인사는 프로그램 수료자가 많은 지점일수록 성과가 더 좋아야 할 것 같은데 실제로는 그렇지 않다는 걸 발견했습니다. 그리고 3년 전에도 똑같은 지적이 있었지만 프로그램 이름만 바뀌고 넘어갔다는 사실도 알게 됐습니다.
+
+여러분이 이인사라면, GBC가 그동안 이 프로그램의 성과를 어떤 관점에서만 바라봐왔는지, 그리고 이인사의 이번 발견이 왜 3년 전처럼 흐지부지되지 않고 조직 전체의 변화로 이어질 수 있을지 각각 진단해보세요.
+
+아래 개념을 최소한 1개 이상 활용해, 구체적인 근거를 들어 설명해주세요.
+(성과 패러다임 vs. 학습 패러다임, Easterby-Smith et al.의 조직학습 6가지 관점, Crossan et al.의 4I 모형)`,
+    levelMsg: {
+      1: `맞습니다. 그런데 GBC가 그동안 어느 쪽 관점에 치우쳐 있었는지가 중요합니다 — 학습을 경제적 성과로 볼지, 개인의 성장 자체로 볼지 중 어느 쪽에 가까웠을까요? 그리고 그게 왜 문제가 될까요?`,
+      2: `훌륭합니다. 3년 전과 같은 문제가 반복된 건, 조직학습을 여러 각도에서 보지 못했기 때문일 수 있습니다. GBC는 그동안 어떤 관점에만 머물러 있었을까요? 그리고 이인사 개인의 발견이 조직 전체의 변화로 이어지려면 무엇이 필요할까요?`,
+      3: `훌륭한 통합입니다 — 그 전환을 밀어붙이는 '힘'까지 고려하셨습니다. Stage 2-C를 완료합니다. Stage 2 전체가 완료되었습니다.`
+    },
+    hints: {
+      0: [
+        `학습을 바라보는 두 가지 상반된 관점이 있었는데, 떠오르시나요? 하나는 학습을 경제적 성과의 수단으로 보고, 다른 하나는 개인의 성장·자기실현 자체로 봅니다.`,
+        `힌트를 더 드릴게요 — Swanson(2010)이 구분한 '성과 패러다임'과 '학습 패러다임'입니다. GBC는 프로그램을 홍보할 때 역량점수·만족도만 강조해왔는데, 이건 어느 쪽 관점에 가까울까요?`,
+        `조금 더 직접적으로 드릴게요 — "성과 패러다임"과 "학습 패러다임" 두 용어를 답변에 넣고, GBC가 어느 쪽에 치우쳐 있었는지 한 문장으로 적어보세요.`
+      ],
+      1: [
+        `정확합니다. 조직학습을 보는 관점이 한 가지가 아니라 여러 가지라는 이론도 있었는데, 떠오르시나요? GBC가 3년 전 지적을 흘려보낸 것도 이것과 관련이 있을 수 있습니다.`,
+        `힌트를 더 드릴게요 — Easterby-Smith et al.(1998)은 조직학습을 심리적·경영과학적·조직학·전략적·생산관리적·문화인류학적 등 6가지 관점으로 봤습니다. GBC는 그동안 어떤 관점(예: 심리적 관점=개인 만족도)에만 머물러 있었을까요?`,
+        `조금 더 직접적으로 드릴게요 — "Easterby-Smith"라는 용어와 함께, GBC가 놓치고 있던 구체적 관점 이름(예: 전략적 관점, 생산관리적 관점)을 답변에 적어보세요.`
+      ],
+      2: [
+        `훌륭합니다. 이제 마지막 개념입니다 — 이인사 개인의 발견이 어떻게 해야 조직 전체의 제도로 자리잡을 수 있을지 설명하는 이론이 있었는데, 떠오르시나요?`,
+        `힌트를 더 드릴게요 — Crossan et al.(1999)의 4I 모형입니다. 개인의 직관(Intuiting)이 그룹의 해석(Interpreting)·통합(Integrating)을 거쳐 조직의 제도(Institutionalizing)로 굳어지는 과정인데, 이인사의 발견은 지금 이 중 어느 단계에 있을까요?`,
+        `조금 더 직접적으로 드릴게요 — "직관", "해석", "통합", "제도화" 중 이인사의 발견이 다음으로 거쳐야 할 단계 이름과, 그 전환을 밀어붙이는 "권력"(Lawrence et al., 2005)이 무엇일지 답변에 적어보세요.`
+      ]
+    },
+    weight: {0:0, 1:25, 2:60, 3:100},
+    needForLevel3: 3,
+    standardSummary: `Swanson(2010)이 구분한 성과 패러다임과 학습 패러다임 중, 성과 패러다임은 학습을 경제적 성과를 높이기 위한 수단으로 보는 관점이고 학습 패러다임은 학습 자체를 개인의 성장과 자기실현으로 보는 관점입니다. GBC는 그동안 학습을 경제적 성과보다 개인의 성장(학습 패러다임) 관점에서만 다뤄왔습니다. 역량점수와 만족도 조사 결과만 홍보해왔을 뿐, 그것이 실제 지점 성과로 이어지는지는 따로 점검하지 않았던 것입니다. Easterby-Smith et al.(1998)은 조직학습을 심리적·경영과학적·조직학·전략적·생산관리적·문화인류학적이라는 6가지 관점으로 나눠 볼 수 있다고 했는데, 이 관점에서 보면 GBC는 그동안 심리적 관점(개인 만족도)에만 머물러 있었다는 뜻이고, 전략적·생산관리적 관점에서 이 프로그램을 점검한 적이 없었기 때문에 3년 전과 똑같은 지적이 다시 반복될 수밖에 없었습니다. 이인사가 데이터 이상치를 발견한 것은 개인 차원의 직관(Intuiting)이었지만, Crossan et al.의 4I 모형에 따르면 이것이 김신한·박하나의 사례와 연결되며 해석(Interpreting)되고, 팀 차원에서 공유·통합(Integrating)되어야 비로소 회사의 실제 매뉴얼로 제도화(Institutionalizing)될 수 있습니다. 이 전환은 저절로 일어나지 않으며, Lawrence et al.(2005)이 말하듯 그것을 밀어붙이는 조직 내 권력과 의지가 함께 필요합니다. GBC가 3년 전과 다른 결론에 도달하려면, 이인사의 이번 발견이 바로 그 힘을 만나야 합니다.`
+  }
+};
+const STAGE_ORDER = ['A','B','C'];
+const STAGE_SHORT = {A:'2-A', B:'2-B', C:'2-C'};
+
+/* =========================================================
+   4) 상태
+   ========================================================= */
+const state = {
+  current: 'A',
+  matched: {A:new Set(), B:new Set(), C:new Set()},
+  level: {A:0, B:0, C:0},
+  done: {A:false, B:false, C:false},
+  terminated: {A:false, B:false, C:false},
+  offTopicCount: {A:0, B:0, C:0},
+  transcript: {A:[], B:[], C:[]},
+  stuckIdx: {A:{0:0,1:0,2:0}, B:{0:0,1:0,2:0}, C:{0:0,1:0,2:0}},
+  showFinal: false,
+  studentName: '',
+  studentNumber: '',
+  gateConfirmed: false
+};
+
+/** 최종 점수 = 정확성(맞힌 개념 비율) 50% + 성실성(시도 턴수 기반) 50%.
+ *  - 정확성: 그 Stage 전체 개념 중 몇 개를 맞혔는지 비율 (0~100, 연속적)
+ *  - 성실성: 5턴 안에 끝내면 100점, 그 이후로는 1턴마다 -5점 (최저 0점)
+ *  Level 3(해결책까지 포함한 완전한 답)에 도달해야 그 Stage를 통과하고
+ *  다음 단계로 넘어갈 수 있다는 규칙 자체는 그대로 유지된다 — 이 점수는
+ *  "통과 여부"가 아니라 "그 안에서 얼마나 정확하고 성실했는지"를 보여준다. */
+function computeStageScore(key){
+  const totalConcepts = CLUSTERS[key].length;
+  const matchedCount = state.matched[key].size;
+  const accuracy = totalConcepts > 0 ? (matchedCount / totalConcepts) * 100 : 0;
+
+  const turns = state.transcript[key].filter(t => t.role === 'student').length;
+  const diligence = Math.max(0, 100 - Math.max(0, turns - 5) * 5);
+
+  const score = accuracy * 0.5 + diligence * 0.5;
+  return { score: Math.round(score * 10) / 10, accuracy: Math.round(accuracy*10)/10, diligence, turns, matchedCount, totalConcepts };
+}
+
+function nextHint(stageKey, level){
+  const arr = STAGES[stageKey].hints[level];
+  const idx = Math.min(state.stuckIdx[stageKey][level], arr.length - 1);
+  state.stuckIdx[stageKey][level] = Math.min(state.stuckIdx[stageKey][level] + 1, arr.length - 1);
+  return arr[idx];
+}
+
+/* =========================================================
+   5) 규칙기반 판정 (Stage B/C 그대로 사용 + Stage A의 폴백으로도 사용)
+   ========================================================= */
+function localJudge(key, text){
+  if(isOffTopic(text)){
+    return { feedback: '', offTopic: true };
+  }
+
+  const stage = STAGES[key];
+  const concepts = CLUSTERS[key];
+  const priorLevel = state.level[key];
+  const lowEffort = isLowEffort(text);
+  const tooShort = !lowEffort && isTooShort(text);
+
+  if(lowEffort){
+    const hint = nextHint(key, priorLevel);
+    return { feedback: '괜찮습니다, 다시 한번 천천히 생각해볼까요?\n\n' + hint, offTopic: false };
+  }
+  if(tooShort){
+    return { feedback: `조금 더 자세히 설명해주시겠어요? 구체적인 근거를 들어 몇 문장 더 작성해주시면 좋겠습니다.`, offTopic: false };
+  }
+
+  // 새로 감지된 개념은 항상 누적 반영 (있으면 추가, 없어도 아래 판정은 계속 진행)
+  const turnNew = concepts.filter(c => !state.matched[key].has(c.id) && detectConcept(text, c));
+  turnNew.forEach(c => state.matched[key].add(c.id));
+
+  const cooc = hasCooc(text) || state.transcript[key].some(t => t.role==='student' && hasCooc(t.text));
+  const solved = hasSolutionIntent(text);
+  const nMatched = state.matched[key].size;
+  const pairsOk = !stage.requirePairs || stage.requirePairs.every(pair => pair.some(id => state.matched[key].has(id)));
+  const requireOk = !stage.requireConcept || state.matched[key].has(stage.requireConcept);
+
+  let newLevel = 0;
+  if(nMatched >= 1) newLevel = 1;
+  if(nMatched >= 1 && cooc) newLevel = 2;
+  if(nMatched >= stage.needForLevel3 && cooc && solved && pairsOk && requireOk) newLevel = 3;
+
+  let aiMsg;
+  if(newLevel > priorLevel){
+    state.level[key] = newLevel;
+    aiMsg = stage.levelMsg[newLevel];
+    if(newLevel >= 3){
+      state.done[key] = true;
+      aiMsg += '\n\n📋 이번 단계 정리\n' + stage.standardSummary;
+    }
+  } else if(turnNew.length > 0){
+    aiMsg = '좋은 개념을 추가로 짚으셨습니다. ' + nextHint(key, priorLevel);
+  } else {
+    aiMsg = nextHint(key, priorLevel);
+  }
+  return { feedback: aiMsg, offTopic: false };
+}
+
+/* =========================================================
+   6) Gemini 기반 판정 (Stage A/B/C) — 실패 시 localJudge로 폴백
+   ========================================================= */
+const GEMINI_PROXY_URL = 'https://script.google.com/macros/s/AKfycbyrtjLntxGr081leU_l9v8u2GCtJg1G0_9AXDkB_B9Fc6MFZGGG0KTHumfbpUC2bTZ3/exec';
+const GEMINI_ENABLED_STAGES = ['A','B','C'];
+
+function notifyTermination(key){
+  const payload = {
+    action: 'terminationAlert',
+    studentName: state.studentName,
+    studentNumber: state.studentNumber,
+    stage: key,
+    timestamp: new Date().toISOString(),
+    lastMessages: state.transcript[key].slice(-6).map(t=>`[${t.role}] ${t.text}`).join('\n---\n')
+  };
+  fetch(GEMINI_PROXY_URL, {
+    method: 'POST',
+    headers: {'Content-Type': 'text/plain'},
+    body: JSON.stringify(payload)
+  }).catch(()=>{ /* 알림 실패해도 학생 학습 흐름은 막지 않음 */ });
+}
+
+async function geminiJudge(key, text){
+  const fetchPromise = fetch(GEMINI_PROXY_URL, {
+    method: 'POST',
+    headers: {'Content-Type': 'text/plain'}, // preflight 회피
+    body: JSON.stringify({
+      stage: key,
+      studentAnswer: text,
+      history: state.transcript[key].filter(t => t.role !== 'student' || t.text !== text),
+      studentId: `${state.studentNumber} ${state.studentName}`.trim() || 'preview'
+    })
+  }).then(res => {
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    return res.json();
+  });
+
+  const timeoutPromise = new Promise((_, reject) => {
+    setTimeout(() => reject(new Error('요청 시간 초과(15초)')), 15000);
+  });
+
+  const data = await Promise.race([fetchPromise, timeoutPromise]);
+  if(data.error) throw new Error(data.message || 'Gemini proxy error');
+
+  if(data.offTopic){
+    return { feedback: '', offTopic: true };
+  }
+
+  data.matchedConcepts.forEach(id => state.matched[key].add(id));
+  state.level[key] = Math.max(state.level[key], Math.min(3, data.level));
+  if(data.done || state.level[key] >= 3) state.done[key] = true;
+
+  let feedback = data.feedback;
+  if(state.done[key]){
+    // 절충안: 학생 개인의 논리를 반영한 짧은 코멘트(Gemini 생성) + 핵심 개념 연결은 고정 문구(모든 학생 동일)
+    const personalNote = (data.summary || '').trim();
+    feedback += '\n\n📋 이번 단계 정리';
+    if(personalNote) feedback += '\n' + personalNote;
+    feedback += '\n\n' + STAGES[key].standardSummary;
+  }
+  return { feedback, offTopic: false };
+}
+
+function showTyping(){
+  const msgList = document.getElementById('msgList');
+  if(!msgList) return;
+  const row = document.createElement('div');
+  row.className = 'msg-row';
+  row.id = 'typingRow';
+  row.innerHTML = `<div class="msg ai" style="opacity:.6; font-family:var(--mono);">AI가 답변을 검토하고 있습니다...</div>`;
+  msgList.appendChild(row);
+}
+function hideTyping(){
+  const row = document.getElementById('typingRow');
+  if(row) row.remove();
+}
+
+async function handleSend(key){
+  const input = document.getElementById('studentInput');
+  const text = input.value.trim();
+  if(!text) return;
+
+  if(!state.gateConfirmed){
+    const gateStatus = document.getElementById('gateStatus');
+    if(gateStatus) gateStatus.textContent = '먼저 위에서 이름과 학번을 입력하고 "확인하고 시작하기"를 눌러주세요.';
+    document.getElementById('idGate') && document.getElementById('idGate').scrollIntoView && document.getElementById('idGate').scrollIntoView({behavior:'smooth'});
+    return;
+  }
+
+  state.transcript[key].push({role:'student', text});
+  input.value = '';
+  renderStageArea(); // 학생 메시지 즉시 반영
+  document.getElementById('sendBtn') && (document.getElementById('sendBtn').disabled = true);
+  showTyping();
+
+  let result;
+  if(GEMINI_ENABLED_STAGES.includes(key)){
+    try {
+      result = await geminiJudge(key, text);
+    } catch(err){
+      console.warn('Gemini 판정 실패, 규칙기반으로 전환:', err);
+      const local = localJudge(key, text);
+      result = { feedback: '(AI 서버 응답이 지연되어 기본 판정 방식으로 전환합니다)\n\n' + local.feedback, offTopic: local.offTopic };
+    }
+  } else {
+    result = localJudge(key, text);
+  }
+
+  hideTyping();
+
+  let aiMsg;
+  if(result.offTopic){
+    state.offTopicCount[key] += 1;
+    if(state.offTopicCount[key] >= 3){
+      state.terminated[key] = true;
+      state.done[key] = false;
+      aiMsg = '⚠ 학습 내용과 무관한 발언이 반복되어 이 사례검토를 종료합니다. 이 Stage는 0점으로 기록됩니다.';
+      notifyTermination(key);
+    } else {
+      aiMsg = offTopicReply(key, state.offTopicCount[key]);
+    }
+  } else {
+    aiMsg = result.feedback;
+  }
+
+  state.transcript[key].push({role:'ai', text: aiMsg});
+  renderStageTabs();
+  renderStageArea();
+}
+
+
+/* =========================================================
+   7) 렌더링
+   ========================================================= */
+function stageFinished(key){
+  return state.done[key] || state.terminated[key];
+}
+
+function renderStageTabs(){
+  document.querySelectorAll('.stage-tab').forEach(tab=>{
+    const key = tab.dataset.stage;
+    tab.classList.toggle('active', key===state.current);
+    tab.classList.toggle('done', state.done[key]);
+    tab.classList.toggle('terminated', state.terminated[key]);
+    const idx = STAGE_ORDER.indexOf(key);
+    const locked = idx>0 && !stageFinished(STAGE_ORDER[idx-1]) && !stageFinished(key);
+    tab.classList.toggle('locked', locked);
+  });
+}
+
+function renderStageArea(){
+  const key = state.current;
+  const stage = STAGES[key];
+  const area = document.getElementById('stageArea');
+
+  if(state.showFinal && STAGE_ORDER.every(k=>stageFinished(k))){
+    area.innerHTML = renderFinalScreen();
+    bindFinalScreen();
+    return;
+  }
+
+  const concepts = CLUSTERS[key];
+  const matched = state.matched[key];
+  const level = state.level[key];
+  const scoreInfo = computeStageScore(key);
+  const stageIdx = STAGE_ORDER.indexOf(key);
+  const prevKey = stageIdx > 0 ? STAGE_ORDER[stageIdx-1] : null;
+
+  area.innerHTML = `
+    <div class="stage-grid">
+      <div class="chat-panel">
+        <div class="concept-title-row">
+          <div class="concept-title">${stage.label}</div>
+          ${prevKey ? `<button class="ghost small" id="prevStageBtn">◀ ${STAGE_SHORT[prevKey]} 대화 보기</button>` : ''}
+        </div>
+        <div id="msgList"></div>
+        ${state.terminated[key] ? `
+          <div class="terminated-banner">
+            ⚠ 이 사례검토는 학습 내용과 무관한 발언이 반복되어 종료되었습니다. 이 Stage는 0점으로 기록됩니다.
+          </div>
+          <div class="complete-banner">
+            <span>다음 단계로 이동할 수 있습니다.</span>
+            ${STAGE_ORDER.indexOf(key) < STAGE_ORDER.length-1
+              ? `<button id="nextStageBtn">다음 단계 →</button>`
+              : `<button id="toFinalBtn">최종 제출로 이동 →</button>`}
+          </div>
+        ` : state.done[key] ? `
+          <div class="complete-banner">
+            <span>Stage ${key} 완료 — 다음 단계로 이동할 수 있습니다.</span>
+            ${STAGE_ORDER.indexOf(key) < STAGE_ORDER.length-1
+              ? `<button id="nextStageBtn">다음 단계 →</button>`
+              : `<button id="toFinalBtn">최종 제출로 이동 →</button>`}
+          </div>
+        ` : `
+          <div class="composer">
+            <textarea id="studentInput" placeholder="여기에 답변을 작성해주세요..."></textarea>
+            <div class="composer-row">
+              <button class="ghost" id="clearBtn" type="button">지우기</button>
+              <button class="primary" id="sendBtn" type="button">답변 제출</button>
+            </div>
+          </div>
+        `}
+      </div>
+      <aside class="readout">
+        <div class="label">Level 판정</div>
+        <div class="level-badge">${level}<span class="of">/ 3</span></div>
+        <div class="label">점수 (정확성 50% + 성실성 50%)</div>
+        <div style="font-size:20px; font-weight:800; margin:2px 0 8px;">${scoreInfo.score}%</div>
+        <div class="bar"><div class="bar-fill" style="width:${scoreInfo.score}%"></div></div>
+        <div class="label" style="font-size:10px; margin-bottom:8px; opacity:.85;">정확성 ${scoreInfo.accuracy}% (${scoreInfo.matchedCount}/${scoreInfo.totalConcepts}개) · 성실성 ${scoreInfo.diligence}% (${scoreInfo.turns}턴)</div>
+        <div class="label" style="margin-bottom:8px;">감지된 개념</div>
+        <ul class="concept-list">
+          ${concepts.map(c=>`<li class="${matched.has(c.id)?'hit':''}"><span class="dot"></span>${c.label}</li>`).join('')}
+        </ul>
+      </aside>
+    </div>
+  `;
+
+  const msgList = document.getElementById('msgList');
+  const transcript = state.transcript[key];
+  if(transcript.length===0){
+    transcript.push({role:'ai', text:stage.start});
+  }
+  msgList.innerHTML = transcript.map(m=>`
+    <div class="msg-row"><div class="msg ${m.role==='ai'?'ai':'student'}">${escapeHtml(m.text)}</div></div>
+  `).join('');
+
+  if(prevKey){
+    document.getElementById('prevStageBtn').addEventListener('click', ()=>{
+      state.current = prevKey;
+      renderAll();
+    });
+  }
+
+  if(!stageFinished(key)){
+    document.getElementById('sendBtn').addEventListener('click', ()=>handleSend(key));
+    document.getElementById('clearBtn').addEventListener('click', ()=>{ document.getElementById('studentInput').value=''; });
+    document.getElementById('studentInput').addEventListener('keydown', (e)=>{
+      if(e.key==='Enter' && (e.metaKey||e.ctrlKey)){ handleSend(key); }
+    });
+  } else {
+    const nextBtn = document.getElementById('nextStageBtn');
+    if(nextBtn) nextBtn.addEventListener('click', ()=>{
+      const idx = STAGE_ORDER.indexOf(key);
+      state.current = STAGE_ORDER[idx+1];
+      renderAll();
+    });
+    const finalBtn = document.getElementById('toFinalBtn');
+    if(finalBtn) finalBtn.addEventListener('click', ()=>{
+      state.showFinal = true;
+      renderStageArea();
+    });
+  }
+}
+
+function escapeHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+/* =========================================================
+   8) 최종 화면 + 제출
+   ========================================================= */
+function renderFinalScreen(){
+  const totalWeight = STAGE_ORDER.reduce((sum,k)=> sum + (state.terminated[k] ? 0 : computeStageScore(k).score), 0) / 3;
+  const conceptSummary = STAGE_ORDER.map(k=>{
+    if(state.terminated[k]) return `${STAGES[k].label}: (사례검토 종료 — 0점)`;
+    const hit = CLUSTERS[k].filter(c=>state.matched[k].has(c.id)).map(c=>c.label);
+    return `${STAGES[k].label}: ${hit.length? hit.join(', ') : '(감지된 개념 없음)'}`;
+  }).join('\n');
+
+  return `
+    <div class="final-screen">
+      <h2>Stage 2 전체 완료</h2>
+      <p style="color:var(--ink-soft); font-size:14px;">평균 반영 점수: <strong>${totalWeight.toFixed(1)}%</strong></p>
+      <p style="font-size:13px; color:var(--ink-soft); white-space:pre-line; text-align:left; background:#F5F7FA; padding:12px 14px; border-radius:8px;">${conceptSummary}</p>
+      <div class="idbox">
+        <input id="studentName" type="text" placeholder="이름" value="${escapeHtml(state.studentName)}">
+        <input id="studentNumber" type="text" placeholder="학번" value="${escapeHtml(state.studentNumber)}">
+      </div>
+      <div style="display:flex; gap:8px; justify-content:center; margin-top:4px; flex-wrap:wrap;">
+        <button class="primary" id="submitBtn">결과 제출하기</button>
+        <button class="ghost" id="downloadBtn" type="button">대화 내용 다운로드(txt)</button>
+      </div>
+      <div id="submitStatus"></div>
+      <p style="font-size:11.5px; color:var(--ink-soft); margin-top:14px;">
+        "결과 제출하기"를 누르면 담당 교수님의 Google Sheets에 자동으로 기록됩니다.
+        "대화 내용 다운로드"는 지금 이 대화 전체를 텍스트 파일로 내 컴퓨터에 저장합니다 (제출과 별개로, 원하시면 함께 하셔도 됩니다).
+      </p>
+    </div>
+  `;
+}
+
+function bindFinalScreen(){
+  document.getElementById('submitBtn').addEventListener('click', submitResults);
+  document.getElementById('downloadBtn').addEventListener('click', downloadTranscript);
+}
+
+function buildTranscriptLines(){
+  const name = state.studentName || (document.getElementById('studentName')||{}).value || '';
+  const number = state.studentNumber || (document.getElementById('studentNumber')||{}).value || '';
+  const lines = [];
+  lines.push(`Good Banking Corporation Stage 2 학습 기록`);
+  lines.push(`이름: ${name}   학번: ${number}`);
+  lines.push(`제출 시각: ${new Date().toLocaleString('ko-KR')}`);
+  lines.push('');
+  STAGE_ORDER.forEach(k=>{
+    lines.push(`===== ${STAGES[k].label} (Level ${state.level[k]}/3, ${state.terminated[k]?'종료(0점)':computeStageScore(k).score+'%'}) =====`);
+    state.transcript[k].forEach(t=>{
+      lines.push(`[${t.role==='ai'?'AI':'학생'}] ${t.text}`);
+    });
+    lines.push('');
+  });
+  return { lines, name, number };
+}
+
+function downloadTranscript(){
+  const { lines, name, number } = buildTranscriptLines();
+  const blob = new Blob([lines.join('\n')], {type:'text/plain;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `GBC_Stage2_${name || '학생'}_${number || ''}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function submitResults(){
+  const nameInput = document.getElementById('studentName');
+  const numberInput = document.getElementById('studentNumber');
+  const studentName = nameInput.value.trim();
+  const studentNumber = numberInput.value.trim();
+  const statusEl = document.getElementById('submitStatus');
+  if(!studentName || !studentNumber){
+    statusEl.textContent = '이름과 학번을 모두 입력해주세요.';
+    statusEl.style.color = 'var(--red)';
+    return;
+  }
+
+  const payload = {
+    action: 'finalSubmit',
+    case: 'GBC Stage2',
+    studentName,
+    studentNumber,
+    timestamp: new Date().toISOString(),
+    stageA_level: state.level.A, stageA_score: state.terminated.A ? 0 : computeStageScore('A').score, stageA_terminated: state.terminated.A,
+    stageB_level: state.level.B, stageB_score: state.terminated.B ? 0 : computeStageScore('B').score, stageB_terminated: state.terminated.B,
+    stageC_level: state.level.C, stageC_score: state.terminated.C ? 0 : computeStageScore('C').score, stageC_terminated: state.terminated.C,
+    conceptsA: [...state.matched.A].join('; '),
+    conceptsB: [...state.matched.B].join('; '),
+    conceptsC: [...state.matched.C].join('; '),
+    transcriptA: state.transcript.A.map(t=>`[${t.role}] ${t.text}`).join('\n---\n'),
+    transcriptB: state.transcript.B.map(t=>`[${t.role}] ${t.text}`).join('\n---\n'),
+    transcriptC: state.transcript.C.map(t=>`[${t.role}] ${t.text}`).join('\n---\n')
+  };
+
+  statusEl.textContent = '제출 중...';
+  statusEl.style.color = 'var(--ink-soft)';
+
+  fetch(GEMINI_PROXY_URL, {
+    method:'POST',
+    headers:{'Content-Type':'text/plain'},
+    body: JSON.stringify(payload)
+  }).then(res => res.json()).then(data => {
+    if(data.error){
+      statusEl.textContent = '제출 실패: ' + (data.message || '알 수 없는 오류') + ' — 교수님께 문의해주세요.';
+      statusEl.style.color = 'var(--red)';
+    } else {
+      statusEl.textContent = '제출 완료. 창을 닫으셔도 됩니다.';
+      statusEl.style.color = 'var(--green)';
+    }
+  }).catch(()=>{
+    statusEl.textContent = '제출 중 오류가 발생했습니다. 다시 시도해주세요.';
+    statusEl.style.color = 'var(--red)';
+  });
+}
+
+/* =========================================================
+   9) 초기화
+   ========================================================= */
+function renderAll(){
+  renderStageTabs();
+  renderStageArea();
+}
+
+document.querySelectorAll('.stage-tab').forEach(tab=>{
+  tab.addEventListener('click', ()=>{
+    if(tab.classList.contains('locked')) return;
+    state.current = tab.dataset.stage;
+    renderAll();
+  });
+});
+
+function confirmGate(){
+  const nameEl = document.getElementById('gateName');
+  const numEl = document.getElementById('gateNumber');
+  const statusEl = document.getElementById('gateStatus');
+  const name = nameEl.value.trim();
+  const number = numEl.value.trim();
+  if(!name || !number){
+    statusEl.textContent = '이름과 학번을 모두 입력해주세요.';
+    return;
+  }
+  state.studentName = name;
+  state.studentNumber = number;
+  state.gateConfirmed = true;
+  statusEl.textContent = '입력하신 이름/학번은 언제든 다시 고치실 수 있습니다. 최종 제출 시 화면에서 한 번 더 확인해주세요.';
+  statusEl.style.color = 'var(--green)';
+  document.getElementById('idGate').classList.add('confirmed');
+}
+document.getElementById('gateConfirmBtn').addEventListener('click', confirmGate);
+
+// 이름/학번은 언제든 실시간으로 수정 가능 — 입력할 때마다 state에 즉시 반영
+document.getElementById('gateName').addEventListener('input', (e)=>{ state.studentName = e.target.value.trim(); });
+document.getElementById('gateNumber').addEventListener('input', (e)=>{ state.studentNumber = e.target.value.trim(); });
+
+renderAll();
+
+/* Debug/testing hook — exposes internal state for QA; harmless in production */
+window.__debug = { state, CLUSTERS, STAGES, renderAll, handleSend, geminiJudge, localJudge, isOffTopic, isTooShort, stageFinished, computeStageScore };
+</script>
+</body>
+</html>
