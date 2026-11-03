@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Good Banking Corporation HRD Scaffolding System — Stage 2</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" as="style" crossorigin
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jetbrains-mono@1.0.6/css/jetbrains-mono.css">
+<style>
+  :root{
+    --bg:#EDF1F5;
+    --surface:#FFFFFF;
+    --ink:#161E2B;
+    --ink-soft:#4B586A;
+    --line:#D7DEE6;
+    --steel:#2C5C8A;
+    --steel-deep:#1C3E5E;
+    --amber:#D98E2B;
+    --amber-soft:#FBEBD2;
+    --green:#3E7D58;
+    --green-soft:#E1F0E6;
+    --red:#B0442E;
+    --radius:14px;
+    --mono:'JetBrains Mono', ui-monospace, monospace;
+    --sans:'Pretendard', -apple-system, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:var(--sans); line-height:1.62; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:980px; margin:0 auto; padding:28px 20px 80px;}
+
+  header.top{
+    display:flex; align-items:baseline; justify-content:space-between;
+    padding-bottom:18px; margin-bottom:22px; border-bottom:2px solid var(--steel-deep);
+  }
+  header.top .brand{display:flex; align-items:baseline; gap:10px;}
+  header.top .brand .mark{
+    font-family:var(--mono); font-size:12px; letter-spacing:.08em; color:#fff;
+    background:var(--steel-deep); padding:3px 8px; border-radius:5px;
+  }
+  header.top h1{font-size:19px; margin:0; font-weight:800; letter-spacing:-0.01em;}
+  header.top .stagepill{font-family:var(--mono); font-size:12px; color:var(--ink-soft);}
+
+  .id-gate{
+    background:var(--amber-soft); border:1px solid var(--amber); border-radius:var(--radius);
+    padding:14px 18px; margin-bottom:18px;
+  }
+  .id-gate-row{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+  .id-gate label{font-size:12.5px; color:var(--ink); display:flex; align-items:center; gap:6px; font-weight:600;}
+  .id-gate input{border:1px solid var(--line); border-radius:7px; padding:7px 10px; font-size:13.5px; width:160px;}
+  .id-gate .gate-status{font-size:12.5px; color:var(--red); font-weight:600;}
+  .id-gate.confirmed{background:var(--green-soft); border-color:var(--green);}
+  .id-gate.confirmed input{background:#fff;}
+
+  .case-card{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    padding:22px 24px; margin-bottom:18px;
+  }
+  .case-card h2{margin:0 0 10px; font-size:16px; font-weight:800;}
+  .case-card p{margin:0 0 10px; font-size:14.5px; color:#233042;}
+  .case-card p:last-child{margin-bottom:0;}
+  .dilemma{
+    border-left:3px solid var(--amber); background:var(--amber-soft);
+    padding:12px 14px; border-radius:8px; font-size:14px; margin-top:10px;
+  }
+
+  .people{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:18px;}
+  .person{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    padding:16px;
+  }
+  .person .avatar{
+    width:44px; height:44px; border-radius:50%; background:#DEE9F2;
+    display:flex; align-items:center; justify-content:center;
+    font-size:24px; margin-bottom:10px;
+  }
+  .person h3{margin:0 0 2px; font-size:14.5px; font-weight:800;}
+  .person .role{font-size:12px; color:var(--ink-soft); margin-bottom:8px;}
+  .person .bg{font-size:12.5px; color:#3A4756; line-height:1.6; margin:0 0 10px;}
+  .person .voices{font-size:13px; color:#233042; border-top:1px dashed var(--line); padding-top:8px; margin-top:8px;}
+  .person .voices blockquote{margin:0 0 8px; padding-left:10px; border-left:2px solid var(--steel); font-style:italic;}
+
+  .stage-tabs{display:flex; gap:8px; margin-bottom:16px;}
+  .stage-tab{
+    flex:1; text-align:center; padding:10px 6px; border-radius:10px;
+    background:#DEE5EC; color:var(--ink-soft); font-weight:700; font-size:13px;
+    border:1px solid transparent; cursor:pointer; position:relative;
+  }
+  .stage-tab .sub{display:block; font-weight:500; font-size:11px; margin-top:2px;}
+  .stage-tab.active{background:var(--steel-deep); color:#fff;}
+  .stage-tab.done{background:var(--green-soft); color:var(--green); border-color:var(--green);}
+  .stage-tab.terminated{background:#FBE4E0; color:var(--red); border-color:var(--red);}
+  .stage-tab.locked{cursor:not-allowed; opacity:.55;}
+
+  .stage-grid{display:grid; grid-template-columns:1fr 260px; gap:16px; align-items:start;}
+  @media (max-width:760px){ .stage-grid{grid-template-columns:1fr;} .people{grid-template-columns:1fr;} }
+
+  .chat-panel{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    padding:20px; min-height:420px; display:flex; flex-direction:column;
+  }
+  .concept-title{font-size:13px; color:var(--ink-soft); font-family:var(--mono); margin-bottom:10px;}
+  .concept-title-row{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:2px;}
+  .concept-title-row .concept-title{margin-bottom:8px;}
+  button.ghost.small{padding:5px 10px; font-size:11.5px; border-radius:6px;}
+  .terminated-banner{
+    background:#FBE4E0; border:1px solid var(--red); color:var(--red);
+    padding:14px 16px; border-radius:10px; font-size:14px; font-weight:700; margin-top:14px;
+  }
+  .msg{max-width:88%; padding:12px 14px; border-radius:12px; font-size:14.5px; margin-bottom:12px; white-space:pre-wrap;}
+  .msg.ai{background:#EEF3F8; border:1px solid #D9E4EE; border-top-left-radius:3px; align-self:flex-start;}
+  .msg.student{background:var(--steel-deep); color:#fff; border-top-right-radius:3px; align-self:flex-end; margin-left:auto;}
+  .msg-row{display:flex;}
+  .composer{margin-top:auto; padding-top:14px; border-top:1px solid var(--line);}
+  textarea{
+    width:100%; min-height:78px; resize:vertical; border:1px solid var(--line); border-radius:10px;
+    padding:10px 12px; font-family:var(--sans); font-size:14px; outline:none;
+  }
+  textarea:focus{border-color:var(--steel);}
+  .composer-row{display:flex; justify-content:flex-end; gap:8px; margin-top:8px;}
+  button.primary{
+    background:var(--steel-deep); color:#fff; border:none; padding:9px 18px;
+    border-radius:8px; font-weight:700; font-size:13.5px; cursor:pointer;
+  }
+  button.primary:hover{background:var(--steel);}
+  button.ghost{
+    background:transparent; color:var(--ink-soft); border:1px solid var(--line);
+    padding:9px 14px; border-radius:8px; font-size:13px; cursor:pointer;
+  }
+  button:disabled{opacity:.5; cursor:not-allowed;}
+
+  .readout{
+    background:var(--steel-deep); color:#EAF1F8; border-radius:var(--radius);
+    padding:16px; font-family:var(--mono); position:sticky; top:16px;
+  }
+  .readout .label{font-size:10.5px; letter-spacing:.08em; color:#9FB6CB; text-transform:uppercase;}
+  .readout .level-badge{
+    font-size:34px; font-weight:800; margin:2px 0 4px; display:flex; align-items:baseline; gap:6px;
+  }
+  .readout .level-badge .of{font-size:13px; color:#9FB6CB;}
+  .readout .bar{height:6px; background:#294D6E; border-radius:4px; overflow:hidden; margin:10px 0 16px;}
+  .readout .bar-fill{height:100%; background:var(--amber); width:0%; transition:width .4s ease;}
+  .readout .concept-list{list-style:none; padding:0; margin:0; font-size:12px;}
+  .readout .concept-list li{
+    display:flex; align-items:center; gap:8px; padding:6px 0; border-bottom:1px solid #26466A; color:#C4D5E5;
+  }
+  .readout .concept-list li:last-child{border-bottom:none;}
+  .readout .dot{width:8px; height:8px; border-radius:50%; background:#3E5C7C; flex-shrink:0;}
+  .readout .concept-list li.hit .dot{background:#6FE0A0;}
+  .readout .concept-list li.hit{color:#fff;}
+
+  .complete-banner{
+    background:var(--green-soft); border:1px solid var(--green); color:var(--green);
+    padding:14px 16px; border-radius:10px; font-size:14px; font-weight:700; margin-top:14px;
+    display:flex; justify-content:space-between; align-items:center; gap:10px;
+  }
+  .complete-banner button{background:var(--green); color:#fff; border:none; padding:8px 14px; border-radius:7px; font-size:13px; cursor:pointer; font-weight:700;}
+
+  .final-screen{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:26px; text-align:center;}
+  .final-screen h2{font-size:20px; margin-top:0;}
+  .idbox{display:flex; gap:8px; justify-content:center; margin:16px 0;}
+  .idbox input{border:1px solid var(--line); border-radius:8px; padding:9px 12px; font-size:14px; width:220px;}
+  #submitStatus{font-size:13px; color:var(--ink-soft); margin-top:10px; font-family:var(--mono);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="brand">
+      <span class="mark">GBC · HRD-ITS</span>
+      <h1>Good Banking Corporation HRD Learning System</h1>
+    </div>
+    <span class="stagepill">Stage 2 — Competency Systems · Career Development · Organizational Performance · Learning Transfer · Organizational Learning</span>
+  </header>
+
+  <section class="id-gate" id="idGate">
+    <div class="id-gate-row">
+      <label>Name <input id="gateName" type="text" placeholder="e.g., John Smith"></label>
+      <label>Student ID <input id="gateNumber" type="text" placeholder="e.g., 2026001"></label>
+      <button class="primary" id="gateConfirmBtn" type="button">Confirm &amp; Start</button>
+      <span id="gateStatus" class="gate-status"></span>
+    </div>
+  </section>
+
+  <section class="case-card">
+    <h2>Industry Background</h2>
+    <p>Good Banking Corporation (GBC) is a full-service bank that has run its "Future Financial Leaders Program" for five years. It has both a corporate banking division that serves business clients and a retail banking division that serves individual customers. The program selects top performers from both divisions for a six-month course designed to build leadership and strategic thinking skills, and the company has consistently promoted it as a flagship talent-development success story — participants' competency scores climb every year, and satisfaction surveys have always come back high.</p>
+    <p>The problem is that this "success" isn't backed up by the numbers. During a routine quarterly data review, Lee In-sa on the HRD team found something troubling: branches with more program graduates should logically show higher customer satisfaction and profitability, but in practice there's almost no such trend. Individual competency scores are clearly rising, yet that growth isn't translating into real performance at the branch level. Lee In-sa also discovers that this isn't the first time the issue has come up — a nearly identical concern was raised internally three years ago, but it was never followed up on.</p>
+    <div class="dilemma">
+      <strong>Core Dilemma —</strong> Leadership is asking whether the company should keep investing in this program, and Lee In-sa, who handles talent-development performance analysis on the HRD team, has to prepare the answer. As she starts interviewing program graduates, she talks to Kim Shin-han, a 15-year corporate banking team lead, and Park Hana, a third-year retail banking employee — and realizes the problem isn't a single, simple issue. The two of them took the same program, but for completely different reasons, what they learned never stuck at the company. Lee In-sa has to diagnose why the learning program the organization gave its people isn't translating into organizational performance.
+    </div>
+  </section>
+
+  <section class="people">
+    <div class="person" data-person="1">
+      <div class="avatar">👩‍💼</div>
+      <h3>Lee In-sa</h3>
+      <div class="role">Talent Development Performance Analyst, HRD Team · 32</div>
+      <p class="bg">Lee In-sa has been at GBC for six years. She started out in recruiting and moved to the talent-development performance analysis team two years ago. The role — juggling both hard numbers and people's stories — felt unfamiliar at first, but she's come to feel that digging into the "why" behind the data is exactly the kind of work she's suited for. While putting together this quarter's numbers, she noticed there was no clear correlation between the proportion of program graduates at a branch and that branch's performance metrics. She recalculated it several times, assuming she'd made an error, but got the same result every time. While drafting a report on the finding, she stumbled onto an internal review document from three years earlier — the same issue had essentially been raised back then too, but it had quietly died after the program was given a slightly different name. Realizing how much older this problem is than she'd assumed hit her hard.</p>
+      <div class="voices">
+        <blockquote>"At first I thought I must have miscalculated, so I checked it three times. But the truly strange part came next. I found a document from three years ago, and the same issue had been raised back then, too. And you know what happened? They just changed part of the program's name and called it done. What scares me most is that we're now asking the same question for a second time in five years."</blockquote>
+      </div>
+    </div>
+    <div class="person" data-person="2">
+      <div class="avatar">👨‍💼</div>
+      <h3>Kim Shin-han</h3>
+      <div class="role">Team Lead, Corporate Banking (business loans &amp; advisory) · 15 years, Program Cohort 1 graduate · 41</div>
+      <p class="bg">Kim Shin-han has worked with corporate clients ever since he joined the company — for fifteen years now he's been listening to everyone from small manufacturing-company owners to startup founders talk through their finances and business plans, and structuring loans around what he hears. When he was selected for Cohort 1 of the program five years ago, he felt genuinely recognized by the company, and he came away from the leadership coaching and strategic decision-making training feeling like he'd learned a lot. The trouble started once he got back to the branch. When he tried floating a new approach in a team meeting, his branch manager pushed back — "why change something that's already proven to work" — and the other team leads let their skepticism show without saying much out loud. He tried pushing forward on his own a few times, but an effort nobody else backs tends not to last. Lately he's been asking himself a harder question: did he actually want to become a manager, or did he just want to get even better at the work he already does?</p>
+      <div class="voices">
+        <blockquote>"I really do think I learned a lot in that program. But when I got back to the branch and floated a new approach in a meeting, my branch manager said, 'why mess with something that's already proven?' The other team leads didn't say much, but you could read it on their faces. After a while I just didn't have the energy to keep pushing it alone. And honestly, lately I've been thinking — I actually enjoy working out the right loan for each individual client more than I enjoy managing a team. But this program keeps pushing me toward becoming more of a manager."</blockquote>
+      </div>
+    </div>
+    <div class="person" data-person="3">
+      <div class="avatar">👩‍💻</div>
+      <h3>Park Hana</h3>
+      <div class="role">Retail Banking (branch-counter service) · 3 years, recent program graduate · 27</div>
+      <p class="bg">Park Hana studied business in college and has worked the customer counter in retail banking at GBC ever since she joined — handling everything from deposit and savings consultations to personal loan guidance, seeing dozens of customers a day. When she was selected for the program in her third year, her peers were openly envious, and she went in with high hopes of her own. But she's had a hard time explaining, even to herself, how material like "global market awareness" and "strategic decision-making" connects to the counter work she actually does every day. Once she learned that completing the program isn't even explicitly factored into promotion reviews, she started feeling less and less sure what those six months actually meant for her career. Lately she's begun to wonder whether this experience — even if it doesn't do much for her inside GBC — might actually be useful if she moved to a foreign bank or a fintech company. She hasn't told anyone this yet, not even her teammates or Lee In-sa.</p>
+      <div class="voices">
+        <blockquote>"What I learned in the program was genuinely interesting. But I work the counter every day, helping customers and processing paperwork, and I honestly don't know when I'd ever use that material. I looked at the promotion review criteria, and completing the program isn't even mentioned. So what were those six months, exactly, for me? ...Actually, I've started thinking something else lately, too. Even if it's no use here, maybe this experience would be worth something somewhere else. I haven't told anyone that yet."</blockquote>
+      </div>
+    </div>
+  </section>
+
+  <nav class="stage-tabs" id="stageTabs">
+    <div class="stage-tab active" data-stage="A">2-A<span class="sub">Competency &amp; Career Development</span></div>
+    <div class="stage-tab locked" data-stage="B">2-B<span class="sub">Learning Transfer</span></div>
+    <div class="stage-tab locked" data-stage="C">2-C<span class="sub">Org. Performance &amp; Learning</span></div>
+  </nav>
+
+  <div id="stageArea"></div>
+
+</div>
+
+<script>
+/* =========================================================
+   1) Case co-occurrence keys
+   ========================================================= */
+const COOC_NAMES = ['lee in-sa','in-sa','kim shin-han','shin-han','park hana','hana'];
+function normalize(t){ return (t||'').toLowerCase(); }
+function hasCooc(text){
+  const n = normalize(text);
+  return COOC_NAMES.some(x => n.includes(x.toLowerCase()));
+}
+function detectConcept(text, concept){
+  const norm = normalize(text);
+  for(const kw of concept.keywords){
+    const kwNorm = kw.toLowerCase();
+    const idx = norm.indexOf(kwNorm);
+    if(idx !== -1){
+      const s = Math.max(0, idx-14), e = Math.min(norm.length, idx+kwNorm.length+14);
+      const win = norm.slice(s,e);
+      const neg = (concept.negations||[]).some(x=>win.includes(x));
+      if(!neg) return true;
+    }
+  }
+  return false;
+}
+const SOLUTION_WORDS = ['design','propose','proposal','program','create','implement','launch','establish','build','plan','recommend','redesign','restructure'];
+function hasSolutionIntent(text){
+  const n = normalize(text);
+  return SOLUTION_WORDS.some(w=>n.includes(w));
+}
+function wordCount(text){
+  return (text||'').trim().split(/\s+/).filter(Boolean).length;
+}
+const IDK_PATTERNS = ["don't know","dont know","not sure","no idea","dunno","i'm not sure","not certain","no clue"];
+function isLowEffort(text){
+  const t = (text||'').trim();
+  if(wordCount(t) < 3) return true;
+  const n = normalize(t);
+  return IDK_PATTERNS.some(p=>n.includes(p));
+}
+const MIN_ANSWER_WORDS = 8;
+function isTooShort(text){
+  return wordCount(text) < MIN_ANSWER_WORDS;
+}
+const OFFTOPIC_PATTERNS = [
+  'who are you','what are you','your name','your real name',
+  'just tell me the answer','give me the answer','tell me the answer','just give me the answer',
+  'can you sing','do you sing','are you good at singing','tell me a joke','tell me something fun','i am bored','im bored',
+  'how old are you','your age','are you a boy','are you a girl','favorite food','your hobby',
+  'do you have a girlfriend','do you have a boyfriend','i love you','marry me'
+];
+function isOffTopic(text){
+  const n = normalize(text);
+  return OFFTOPIC_PATTERNS.some(p=>n.includes(p));
+}
+function offTopicReply(key, count){
+  const firstLine = STAGES[key].start.split('\n')[0];
+  let msg = `That doesn't seem related to this case. Shall we get back to the GBC scenario?\n\n${firstLine}`;
+  if(count === 2){
+    msg += `\n\n⚠ If this happens one more time, this case review will be ended and recorded as 0 points.`;
+  }
+  return msg;
+}
+
+/* =========================================================
+   2) Concept clusters (per stage)
+   ========================================================= */
+const CLUSTERS = {
+  A: [
+    {id:'competency', label:'Competency', keywords:['competency','competence','mcclelland','high performer','top performer','behavioral characteristic','distinguishing behavior','superior performer'], negations:['not relevant','irrelevant','not related']},
+    {id:'iceberg', label:"Spencer & Spencer's Competency Iceberg Model", keywords:['spencer','competency iceberg','iceberg model','above the surface','below the surface','self-concept','hidden traits','visible skill and hidden trait'], negations:['not right','irrelevant']},
+    {id:'katz', label:"Katz's Hierarchical Competency Levels", keywords:['katz','conceptual skill','human skill','technical skill','different competency by level','competency differs by rank','executives need','frontline staff need'], negations:['all the same','no difference by rank']},
+    {id:'holland', label:"Holland's RIASEC Theory", keywords:['holland','riasec','interest type','realistic type','investigative type','artistic type','social type','enterprising type','conventional type','mismatch between interest and job'], negations:['irrelevant','not important']},
+    {id:'schein', label:"Schein's Career Anchor Theory", keywords:['schein','career anchor','technical/functional','managerial competence','autonomy','security','entrepreneurial creativity','lifestyle integration','value they cannot give up','core value in a career'], negations:['not right','irrelevant']},
+    {id:'super', label:"Super's Life-Span, Life-Space Theory", keywords:['super','life-span','life-space','growth stage','exploration stage','establishment stage','maintenance stage','decline stage','early career stage','has not decided on a direction yet','still exploring her career'], negations:['irrelevant','not related']},
+    {id:'kram', label:"Kram's Relational Career Movement Model", keywords:['kram','relational career','mentorship','sponsorship','trust-based relationship','growth through a mentor','relationship with a senior colleague'], negations:['irrelevant','not needed']}
+  ],
+  B: [
+    {id:'identical', label:'Theory of Identical Elements', keywords:['identical elements','training and job do not match','what she learned differs from her actual job','gap between training content and real work'], negations:['not right','irrelevant']},
+    {id:'stimgen', label:'Stimulus Generalization Theory', keywords:['stimulus generalization','general principle','hard to apply because too general','too abstract to apply','far transfer'], negations:['irrelevant','not related']},
+    {id:'cogtransfer', label:'Cognitive Theory of Transfer', keywords:['cognitive theory of transfer','noe','information retrieval','cannot recall what she learned','no reference tool','no way to apply it in practice','no job aid'], negations:['irrelevant','not related']},
+    {id:'baldwinford', label:"Baldwin & Ford's Training Transfer Process Model", keywords:['baldwin','ford','trainee characteristics','training design','work environment','environment does not support it','no support to apply it'], negations:['not right','irrelevant']},
+    {id:'lte', label:'Learning Transfer Environment (LTE)', keywords:['lte','learning transfer environment','supervisor support','peer support','no support from manager or colleagues','no one backed him up','organizational climate discouraged it'], negations:['irrelevant','not related']}
+  ],
+  C: [
+    {id:'paradigm', label:'Performance Paradigm vs. Learning Paradigm', keywords:['performance paradigm','learning paradigm','swanson','means to economic performance','self-actualization','whether to treat learning as a means or an end'], negations:['irrelevant']},
+    {id:'easterbysmith', label:"Easterby-Smith et al.'s Six Perspectives on Organizational Learning", keywords:['easterby-smith','six perspectives','psychological perspective','management science perspective','sociological perspective','strategic perspective','production perspective','cultural anthropology perspective','viewing organizational learning from multiple angles','stuck in one perspective'], negations:['irrelevant','not related']},
+    {id:'crossan4i', label:"Crossan et al.'s 4I Model", keywords:['crossan','4i model','intuiting','interpreting','integrating','institutionalizing','feed-forward','feedback','power','lawrence','individual insight becoming organizational rule','from personal discovery to company manual'], negations:['not right','irrelevant']}
+  ]
+};
+
+/* =========================================================
+   3) Stage scripts (start question + Level 0-3 AI messages)
+   ========================================================= */
+const STAGES = {
+  A: {
+    label:'Stage 2-A · Competency Systems + Career Development',
+    start: `Lee In-sa has learned that the "Future Financial Leaders Program"'s competency list was put together from just six executive interviews. Kim Shin-han says, "this program is just trying to turn me into a manager," and Park Hana says, "I don't know what these six months even mean for my career."
+
+If you were Lee In-sa, how would you diagnose the problem with the competency list and each of these two people's career concerns?
+
+Please use at least one of the concepts below to explain your answer in detail.
+(Competency, Spencer & Spencer's Competency Iceberg Model, Katz's Hierarchical Competency Levels, Holland's RIASEC Theory, Schein's Career Anchor Theory, Super's Life-Span Life-Space Theory, Kram's Relational Career Movement Model)`,
+    levelMsg: {
+      1: `Exactly right. Competency includes both what's visible from the outside (knowledge and skill) and what isn't (self-concept, motivation, and values). Could you explain both parts in more detail, and connect them to how competency levels differ by job rank?`,
+      2: `Good. Now, could you explain, using two different theories, which theory best accounts for Kim Shin-han's career issue and which best accounts for Park Hana's?`,
+      3: `Excellent integration. Stage 2-A is complete.`
+    },
+    hints: {
+      0: [
+        `Let's start with the fact that the competency list was built from just six executive interviews. There was a concept that says competency should be defined by comparing the behavior of top performers against average performers — does that come to mind?`,
+        `Here's more of a hint — this concept comes from McClelland (1973), who defined Competency as the behavioral difference between top performers and average performers. Does GBC's competency list actually follow that definition?`,
+        `Let me be more direct — include the word "Competency" in your answer, and add one sentence on why GBC's competency list doesn't match that definition.`
+      ],
+      1: [
+        `That's an accurate definition. But competency also includes things that aren't visible from the outside — could you explain that distinction, and how it connects to Kim Shin-han or Park Hana's situation?`,
+        `Here's more of a hint — Spencer & Spencer's Competency Iceberg Model splits competency into knowledge/skill (above the surface) and self-concept/motivation (below the surface). There's also Katz's theory that competency needs differ by level — what competencies do executives, mid-level managers, and frontline staff each need more of?`,
+        `Let me be more direct — include both "Iceberg Model" and "Katz" in your answer, and write one sentence on how competency needs differ by level.`
+      ],
+      2: [
+        `Good diagnosis. Kim Shin-han said, "I didn't want to become a manager" — there's a theory that people have different career values they're unwilling to give up. Which value does Kim Shin-han seem to hold? And what about Park Hana's situation?`,
+        `Here's more of a hint — Schein's Career Anchor Theory names eight anchors (technical/functional competence, general management, autonomy, security, and so on). Park Hana's career direction still isn't clear — where would she be in Super's life-span stages?`,
+        `Let me be more direct — include both "Career Anchor" (naming which anchor Kim Shin-han holds) and "life stage" (naming which stage Park Hana is in) in your answer.`
+      ]
+    },
+    weight: {0:0, 1:25, 2:60, 3:100},
+    needForLevel3: 3,
+    standardSummary: `GBC's "Future Financial Leaders Program" built its competency list from executive interviews alone, without ever comparing the behavior of top performers against average performers — an approach that runs counter to the very definition of Competency (McClelland) and to Spencer & Spencer's Competency Iceberg Model. On top of that, Katz's theory of hierarchical competency levels holds that executives need more conceptual skill, mid-level managers need more human (interpersonal) skill, and frontline staff need more technical skill — yet GBC's competency list was applied uniformly to everyone, with no such distinction by level. This design flaw showed up differently for each of the two employees. Kim Shin-han, 15 years in, holds Schein's Technical/Functional career anchor, yet the program kept pushing him toward a management track. Park Hana, three years in, is still in Super's Exploration stage and doesn't yet have a clear Holland interest-type match, yet the program forced a predetermined direction on her too. In the end, the flaw in the competency system's design fitted both employees — at very different career stages — with a coat that didn't suit either of them.`
+  },
+  B: {
+    label:'Stage 2-B · Learning Transfer',
+    start: `Kim Shin-han tried what he learned at a team meeting, but his branch manager asked "why change something that's already proven," and the other team leads reacted with little enthusiasm. Eventually he lost the energy to keep pushing it alone. Park Hana, meanwhile, can't even find a connection between what she learned and her day-to-day counter work.
+
+If you were Lee In-sa, why do you think "the learning didn't survive contact with the real workplace" for these two people who took the same program — and what's different about each of their cases?
+
+Please use at least one of the concepts below, addressing each person individually.
+(Theory of Identical Elements, Stimulus Generalization Theory, Cognitive Theory of Transfer, Baldwin & Ford's Training Transfer Process Model, Learning Transfer Environment (LTE))`,
+    levelMsg: {
+      1: `Correct. What Park Hana learned — "global market awareness," "strategic decision-making" — doesn't hold up well as either identical to her real job or as a broadly generalizable principle. Why do you think that is?`,
+      2: `Good. Now let's turn to Kim Shin-han. He says he understood the material itself, so a different theory is needed for his case than for Park Hana's. Which one would explain it?`,
+      3: `Excellent integration. Stage 2-B is complete.`
+    },
+    hints: {
+      0: [
+        `Kim Shin-han and Park Hana are dealing with problems at two different levels. There's a theory about how closely training content needs to match the real job — and another about how far a general principle can generalize to new situations. Does either come to mind?`,
+        `Here's more of a hint — one is the Theory of Identical Elements (transfer works better the more training matches the job exactly), and the other is Stimulus Generalization Theory (transfer works better when general principles apply across many situations). Park Hana's training content doesn't fit well under either — why not?`,
+        `Let me be more direct — include both "Identical Elements" and "Stimulus Generalization" in your answer, and connect them to Park Hana's situation in one sentence each.`
+      ],
+      1: [
+        `Correct. There's also the Cognitive Theory of Transfer — would a job aid, like a reference card or a checklist, have made a difference for Park Hana?`,
+        `Here's more of a hint — the Cognitive Theory of Transfer holds that a learner's ability to retrieve information determines whether transfer happens. Could you note that Park Hana didn't have any such cognitive tool?`,
+        `Let me be more direct — include the phrase "Cognitive Theory of Transfer" in your answer.`
+      ],
+      2: [
+        `Good. Kim Shin-han says he understood the material itself, so a different theory applies to him than to Park Hana. There's a model covering trainee characteristics, training design, and work environment — which of these factors do you think caused the breakdown in Kim Shin-han's case, based on how his branch manager and colleagues reacted?`,
+        `Here's more of a hint — Learning Transfer Environment (LTE) breaks the work-environment factor down further. Between supervisor support and peer support, which one was Kim Shin-han missing?`,
+        `Let me be more direct — include both "Baldwin & Ford" and "LTE" (naming supervisor or peer support specifically) in your answer.`
+      ]
+    },
+    weight: {0:0, 1:25, 2:60, 3:100},
+    needForLevel3: 3,
+    requirePairs: [['identical','stimgen'], ['baldwinford','lte']],
+    standardSummary: `Kim Shin-han and Park Hana took the same training, but the learning failed to stick at the company for entirely different reasons. Park Hana's case is explained by the Theory of Identical Elements and Stimulus Generalization Theory: the content she learned ("global market awareness," "strategic decision-making") neither overlapped with her real job (counter service) nor generalized as broadly applicable principle — it landed in an awkward middle ground. On top of that, as the Cognitive Theory of Transfer points out, she had no reference material or tool to retrieve what she'd learned when she actually needed it, and this compounded with her already-unclear career direction (Super's Exploration stage) to produce even more confusion. Kim Shin-han's case is different. Baldwin & Ford's model would say his trainee characteristics and the training design itself were fine — the breakdown happened in the work-environment factor. Looking at Learning Transfer Environment (LTE), both supervisor support and peer support were absent; even though he understood the material, he tried it alone without backing and eventually gave up. And as this case shows, learning that goes unsupported can even push someone, as it has Park Hana, toward quietly considering leaving the organization altogether.`
+  },
+  C: {
+    label:'Stage 2-C · Organizational Performance + Organizational Learning',
+    start: `Lee In-sa found that branches with more program graduates should logically show better performance, but in practice they don't. She also learned that three years ago, someone raised nearly the same concern — and it was dropped after the program was simply given a slightly different name.
+
+If you were Lee In-sa, diagnose what single perspective GBC has been using to evaluate this program's success, and why Lee In-sa's discovery this time might — or might not — avoid quietly fading away the way it did three years ago.
+
+Please use at least one of the concepts below, with specific supporting reasons.
+(Performance Paradigm vs. Learning Paradigm, Easterby-Smith et al.'s Six Perspectives on Organizational Learning, Crossan et al.'s 4I Model)`,
+    levelMsg: {
+      1: `Right. But it matters which of the two perspectives GBC has actually been leaning on — has it been treating learning as a means to economic performance, or as growth and self-actualization in its own right? And why does that distinction matter here?`,
+      2: `Excellent. The fact that the same problem resurfaced after three years may be because the organization never looked at this from more than one angle. Which perspective has GBC been stuck in? And what would it take for Lee In-sa's individual discovery to turn into organization-wide change?`,
+      3: `Excellent integration — you've even accounted for the "force" that would be needed to drive that transition. Stage 2-C is complete. All of Stage 2 is now complete.`
+    },
+    hints: {
+      0: [
+        `There are two opposing ways to look at learning — does either come to mind? One treats learning as a means to economic performance, and the other treats learning as growth and self-actualization in its own right.`,
+        `Here's more of a hint — it's Swanson's (2010) distinction between the "performance paradigm" and the "learning paradigm." GBC has consistently promoted the program using competency scores and satisfaction ratings — which of the two paradigms does that lean toward?`,
+        `Let me be more direct — include both "performance paradigm" and "learning paradigm" in your answer, and write one sentence on which one GBC has leaned toward.`
+      ],
+      1: [
+        `Correct. There's also a theory that organizational learning isn't just one thing — it can be viewed from several different angles. Does it come to mind? This may also explain why GBC let the three-year-old concern slide.`,
+        `Here's more of a hint — Easterby-Smith et al. (1998) identified six perspectives on organizational learning: psychological, management-science, sociological, strategic, production, and cultural-anthropological. Which single perspective (for example, the psychological one — individual satisfaction) has GBC been stuck in?`,
+        `Let me be more direct — include "Easterby-Smith" in your answer, and name specifically which perspective(s) — for example, strategic or production — GBC has been missing.`
+      ],
+      2: [
+        `Excellent. One last concept — is there a theory that explains how one person's individual insight can eventually become an organization-wide institution? Does it come to mind?`,
+        `Here's more of a hint — it's Crossan et al.'s (1999) 4I Model. An individual's intuiting moves through the group's interpreting and integrating before it becomes institutionalizing at the organizational level. Which stage is Lee In-sa's discovery at right now?`,
+        `Let me be more direct — name which of the stages "intuiting," "interpreting," "integrating," or "institutionalizing" Lee In-sa's discovery needs to move into next, and also name the "power" (Lawrence et al., 2005) that would be needed to drive that transition.`
+      ]
+    },
+    weight: {0:0, 1:20, 2:50, 3:100},
+    needForLevel3: 3,
+    standardSummary: `Between Swanson's (2010) performance paradigm and learning paradigm, the performance paradigm treats learning as a means to raise economic performance, while the learning paradigm treats learning itself as personal growth and self-actualization. GBC has consistently treated this program through the learning-paradigm lens — promoting competency scores and satisfaction results, but never separately checking whether that growth actually translated into branch performance. Easterby-Smith et al. (1998) argued that organizational learning can be examined through six different perspectives — psychological, management-science, sociological, strategic, production, and cultural-anthropological. Seen through that lens, GBC has remained stuck in the psychological perspective (individual satisfaction) and has never once examined this program from a strategic or production standpoint — which is exactly why the same concern raised three years ago has now resurfaced. Lee In-sa's discovery of the data anomaly was, in Crossan et al.'s terms, an individual act of Intuiting. But according to their 4I Model, that insight only becomes real organizational change once it connects to Kim Shin-han and Park Hana's cases and gets Interpreting collectively, then Integrating at the team level, and is finally Institutionalizing into the company's actual policies and manuals. That transition doesn't happen on its own — as Lawrence et al. (2005) note, it requires organizational power and will to push it through. For GBC to reach a different outcome than it did three years ago, Lee In-sa's discovery this time has to meet exactly that force.`
+  }
+};
+const STAGE_ORDER = ['A','B','C'];
+const STAGE_SHORT = {A:'2-A', B:'2-B', C:'2-C'};
+
+/* =========================================================
+   4) State
+   ========================================================= */
+const state = {
+  current: 'A',
+  matched: {A:new Set(), B:new Set(), C:new Set()},
+  level: {A:0, B:0, C:0},
+  done: {A:false, B:false, C:false},
+  terminated: {A:false, B:false, C:false},
+  offTopicCount: {A:0, B:0, C:0},
+  transcript: {A:[], B:[], C:[]},
+  stuckIdx: {A:{0:0,1:0,2:0}, B:{0:0,1:0,2:0}, C:{0:0,1:0,2:0}},
+  showFinal: false,
+  studentName: '',
+  studentNumber: '',
+  gateConfirmed: false
+};
+
+/** Final score = accuracy (share of matched concepts) 50% + diligence (based on attempt count) 50%.
+ *  - Accuracy: percentage of this stage's total concepts the student has matched (0–100, continuous)
+ *  - Diligence: 100 if finished within 5 turns; −5 points per turn beyond that (floor 0)
+ *  Reaching Level 3 (a complete answer including a proposed solution) is still required to pass
+ *  this stage and unlock the next one — this score doesn't change that gate, it just shows how
+ *  accurate and diligent the student was along the way. */
+function computeStageScore(key){
+  const totalConcepts = CLUSTERS[key].length;
+  const matchedCount = state.matched[key].size;
+  const accuracy = totalConcepts > 0 ? (matchedCount / totalConcepts) * 100 : 0;
+
+  const turns = state.transcript[key].filter(t => t.role === 'student').length;
+  const diligence = Math.max(0, 100 - Math.max(0, turns - 5) * 5);
+
+  const score = accuracy * 0.5 + diligence * 0.5;
+  return { score: Math.round(score * 10) / 10, accuracy: Math.round(accuracy*10)/10, diligence, turns, matchedCount, totalConcepts };
+}
+
+function nextHint(stageKey, level){
+  const arr = STAGES[stageKey].hints[level];
+  const idx = Math.min(state.stuckIdx[stageKey][level], arr.length - 1);
+  state.stuckIdx[stageKey][level] = Math.min(state.stuckIdx[stageKey][level] + 1, arr.length - 1);
+  return arr[idx];
+}
+
+/* =========================================================
+   5) Rule-based judging (used for Stage B/C fallback + Stage A fallback)
+   ========================================================= */
+function localJudge(key, text){
+  if(isOffTopic(text)){
+    return { feedback: '', offTopic: true };
+  }
+
+  const stage = STAGES[key];
+  const concepts = CLUSTERS[key];
+  const priorLevel = state.level[key];
+  const lowEffort = isLowEffort(text);
+  const tooShort = !lowEffort && isTooShort(text);
+
+  if(lowEffort){
+    const hint = nextHint(key, priorLevel);
+    return { feedback: "No worries — let's take a moment and think it through again.\n\n" + hint, offTopic: false };
+  }
+  if(tooShort){
+    return { feedback: `Could you go into a bit more detail — at least ${MIN_ANSWER_WORDS} words or so?`, offTopic: false };
+  }
+
+  const turnNew = concepts.filter(c => !state.matched[key].has(c.id) && detectConcept(text, c));
+  turnNew.forEach(c => state.matched[key].add(c.id));
+
+  const cooc = hasCooc(text) || state.transcript[key].some(t => t.role==='student' && hasCooc(t.text));
+  const solved = hasSolutionIntent(text);
+  const nMatched = state.matched[key].size;
+  const pairsOk = !stage.requirePairs || stage.requirePairs.every(pair => pair.some(id => state.matched[key].has(id)));
+  const requireOk = !stage.requireConcept || state.matched[key].has(stage.requireConcept);
+
+  let newLevel = 0;
+  if(nMatched >= 1) newLevel = 1;
+  if(nMatched >= 1 && cooc) newLevel = 2;
+  if(nMatched >= stage.needForLevel3 && cooc && solved && pairsOk && requireOk) newLevel = 3;
+
+  let aiMsg;
+  if(newLevel > priorLevel){
+    state.level[key] = newLevel;
+    aiMsg = stage.levelMsg[newLevel];
+    if(newLevel >= 3){
+      state.done[key] = true;
+      aiMsg += '\n\n📋 Stage Summary\n' + stage.standardSummary;
+    }
+  } else if(turnNew.length > 0){
+    aiMsg = "Good, you've raised another concept. " + nextHint(key, priorLevel);
+  } else {
+    aiMsg = nextHint(key, priorLevel);
+  }
+  return { feedback: aiMsg, offTopic: false };
+}
+
+/* =========================================================
+   6) Gemini-based judging (Stage A/B/C) — falls back to localJudge on failure
+   ========================================================= */
+const GEMINI_PROXY_URL = 'https://script.google.com/macros/s/AKfycbxByZuuu_OoxHYFe9NSw8dKhUPaDrHFdSAqtGtsjp_hYrjyiGkUPdq3WE5SVZpYEol8Ew/exec';
+const GEMINI_ENABLED_STAGES = ['A','B','C'];
+
+function notifyTermination(key){
+  const payload = {
+    action: 'terminationAlert',
+    studentName: state.studentName,
+    studentNumber: state.studentNumber,
+    stage: key,
+    timestamp: new Date().toISOString(),
+    lastMessages: state.transcript[key].slice(-6).map(t=>`[${t.role}] ${t.text}`).join('\n---\n')
+  };
+  fetch(GEMINI_PROXY_URL, {
+    method: 'POST',
+    headers: {'Content-Type': 'text/plain'},
+    body: JSON.stringify(payload)
+  }).catch(()=>{ /* notification failure should not block the student's flow */ });
+}
+
+async function geminiJudge(key, text){
+  const fetchPromise = fetch(GEMINI_PROXY_URL, {
+    method: 'POST',
+    headers: {'Content-Type': 'text/plain'}, // avoids CORS preflight
+    body: JSON.stringify({
+      stage: key,
+      studentAnswer: text,
+      history: state.transcript[key].filter(t => t.role !== 'student' || t.text !== text),
+      studentId: `${state.studentNumber} ${state.studentName}`.trim() || 'preview'
+    })
+  }).then(res => {
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    return res.json();
+  });
+
+  const timeoutPromise = new Promise((_, reject) => {
+    setTimeout(() => reject(new Error('Request timed out (15s)')), 15000);
+  });
+
+  const data = await Promise.race([fetchPromise, timeoutPromise]);
+  if(data.error) throw new Error(data.message || 'Gemini proxy error');
+
+  if(data.offTopic){
+    return { feedback: '', offTopic: true };
+  }
+
+  data.matchedConcepts.forEach(id => state.matched[key].add(id));
+  state.level[key] = Math.max(state.level[key], Math.min(3, data.level));
+  if(data.done || state.level[key] >= 3) state.done[key] = true;
+
+  let feedback = data.feedback;
+  if(state.done[key]){
+    const personalNote = (data.summary || '').trim();
+    feedback += '\n\n📋 Stage Summary';
+    if(personalNote) feedback += '\n' + personalNote;
+    feedback += '\n\n' + STAGES[key].standardSummary;
+  }
+  return { feedback, offTopic: false };
+}
+
+function showTyping(){
+  const msgList = document.getElementById('msgList');
+  if(!msgList) return;
+  const row = document.createElement('div');
+  row.className = 'msg-row';
+  row.id = 'typingRow';
+  row.innerHTML = `<div class="msg ai" style="opacity:.6; font-family:var(--mono);">AI is reviewing your answer...</div>`;
+  msgList.appendChild(row);
+}
+function hideTyping(){
+  const row = document.getElementById('typingRow');
+  if(row) row.remove();
+}
+
+async function handleSend(key){
+  const input = document.getElementById('studentInput');
+  const text = input.value.trim();
+  if(!text) return;
+
+  if(!state.gateConfirmed){
+    const gateStatus = document.getElementById('gateStatus');
+    if(gateStatus) gateStatus.textContent = 'Please enter your name and student ID above, and click "Confirm & Start" first.';
+    document.getElementById('idGate') && document.getElementById('idGate').scrollIntoView && document.getElementById('idGate').scrollIntoView({behavior:'smooth'});
+    return;
+  }
+
+  state.transcript[key].push({role:'student', text});
+  input.value = '';
+  renderStageArea();
+  document.getElementById('sendBtn') && (document.getElementById('sendBtn').disabled = true);
+  showTyping();
+
+  let result;
+  if(GEMINI_ENABLED_STAGES.includes(key)){
+    try {
+      result = await geminiJudge(key, text);
+    } catch(err){
+      console.warn('Gemini judging failed, switching to rule-based fallback:', err);
+      const local = localJudge(key, text);
+      result = { feedback: '(The AI server response was delayed, so we switched to the standard judging method.)\n\n' + local.feedback, offTopic: local.offTopic };
+    }
+  } else {
+    result = localJudge(key, text);
+  }
+
+  hideTyping();
+
+  let aiMsg;
+  if(result.offTopic){
+    state.offTopicCount[key] += 1;
+    if(state.offTopicCount[key] >= 3){
+      state.terminated[key] = true;
+      state.done[key] = false;
+      aiMsg = '⚠ This case review is being ended because of repeated off-topic remarks. This stage will be recorded as 0 points.';
+      notifyTermination(key);
+    } else {
+      aiMsg = offTopicReply(key, state.offTopicCount[key]);
+    }
+  } else {
+    aiMsg = result.feedback;
+  }
+
+  state.transcript[key].push({role:'ai', text: aiMsg});
+  renderStageTabs();
+  renderStageArea();
+}
+
+
+/* =========================================================
+   7) Rendering
+   ========================================================= */
+function stageFinished(key){
+  return state.done[key] || state.terminated[key];
+}
+
+function renderStageTabs(){
+  document.querySelectorAll('.stage-tab').forEach(tab=>{
+    const key = tab.dataset.stage;
+    tab.classList.toggle('active', key===state.current);
+    tab.classList.toggle('done', state.done[key]);
+    tab.classList.toggle('terminated', state.terminated[key]);
+    const idx = STAGE_ORDER.indexOf(key);
+    const locked = idx>0 && !stageFinished(STAGE_ORDER[idx-1]) && !stageFinished(key);
+    tab.classList.toggle('locked', locked);
+  });
+}
+
+function renderStageArea(){
+  const key = state.current;
+  const stage = STAGES[key];
+  const area = document.getElementById('stageArea');
+
+  if(state.showFinal && STAGE_ORDER.every(k=>stageFinished(k))){
+    area.innerHTML = renderFinalScreen();
+    bindFinalScreen();
+    return;
+  }
+
+  const concepts = CLUSTERS[key];
+  const matched = state.matched[key];
+  const level = state.level[key];
+  const scoreInfo = computeStageScore(key);
+  const stageIdx = STAGE_ORDER.indexOf(key);
+  const prevKey = stageIdx > 0 ? STAGE_ORDER[stageIdx-1] : null;
+
+  area.innerHTML = `
+    <div class="stage-grid">
+      <div class="chat-panel">
+        <div class="concept-title-row">
+          <div class="concept-title">${stage.label}</div>
+          ${prevKey ? `<button class="ghost small" id="prevStageBtn">◀ View ${STAGE_SHORT[prevKey]} conversation</button>` : ''}
+        </div>
+        <div id="msgList"></div>
+        ${state.terminated[key] ? `
+          <div class="terminated-banner">
+            ⚠ This case review was ended due to repeated off-topic remarks. This stage will be recorded as 0 points.
+          </div>
+          <div class="complete-banner">
+            <span>You may proceed to the next stage.</span>
+            ${STAGE_ORDER.indexOf(key) < STAGE_ORDER.length-1
+              ? `<button id="nextStageBtn">Next stage →</button>`
+              : `<button id="toFinalBtn">Go to final submission →</button>`}
+          </div>
+        ` : state.done[key] ? `
+          <div class="complete-banner">
+            <span>Stage ${key} complete — you may proceed to the next stage.</span>
+            ${STAGE_ORDER.indexOf(key) < STAGE_ORDER.length-1
+              ? `<button id="nextStageBtn">Next stage →</button>`
+              : `<button id="toFinalBtn">Go to final submission →</button>`}
+          </div>
+        ` : `
+          <div class="composer">
+            <textarea id="studentInput" placeholder="Write your answer here..."></textarea>
+            <div class="composer-row">
+              <button class="ghost" id="clearBtn" type="button">Clear</button>
+              <button class="primary" id="sendBtn" type="button">Submit Answer</button>
+            </div>
+          </div>
+        `}
+      </div>
+      <aside class="readout">
+        <div class="label">Level</div>
+        <div class="level-badge">${level}<span class="of">/ 3</span></div>
+        <div class="label">Score (50% accuracy + 50% diligence)</div>
+        <div style="font-size:20px; font-weight:800; margin:2px 0 8px;">${scoreInfo.score}%</div>
+        <div class="bar"><div class="bar-fill" style="width:${scoreInfo.score}%"></div></div>
+        <div class="label" style="font-size:10px; margin-bottom:8px; opacity:.85;">Accuracy ${scoreInfo.accuracy}% (${scoreInfo.matchedCount}/${scoreInfo.totalConcepts}) · Diligence ${scoreInfo.diligence}% (${scoreInfo.turns} turns)</div>
+        <div class="label" style="margin-bottom:8px;">Concepts Detected</div>
+        <ul class="concept-list">
+          ${concepts.map(c=>`<li class="${matched.has(c.id)?'hit':''}"><span class="dot"></span>${c.label}</li>`).join('')}
+        </ul>
+      </aside>
+    </div>
+  `;
+
+  const msgList = document.getElementById('msgList');
+  const transcript = state.transcript[key];
+  if(transcript.length===0){
+    transcript.push({role:'ai', text:stage.start});
+  }
+  msgList.innerHTML = transcript.map(m=>`
+    <div class="msg-row"><div class="msg ${m.role==='ai'?'ai':'student'}">${escapeHtml(m.text)}</div></div>
+  `).join('');
+
+  if(prevKey){
+    document.getElementById('prevStageBtn').addEventListener('click', ()=>{
+      state.current = prevKey;
+      renderAll();
+    });
+  }
+
+  if(!stageFinished(key)){
+    document.getElementById('sendBtn').addEventListener('click', ()=>handleSend(key));
+    document.getElementById('clearBtn').addEventListener('click', ()=>{ document.getElementById('studentInput').value=''; });
+    document.getElementById('studentInput').addEventListener('keydown', (e)=>{
+      if(e.key==='Enter' && (e.metaKey||e.ctrlKey)){ handleSend(key); }
+    });
+  } else {
+    const nextBtn = document.getElementById('nextStageBtn');
+    if(nextBtn) nextBtn.addEventListener('click', ()=>{
+      const idx = STAGE_ORDER.indexOf(key);
+      state.current = STAGE_ORDER[idx+1];
+      renderAll();
+    });
+    const finalBtn = document.getElementById('toFinalBtn');
+    if(finalBtn) finalBtn.addEventListener('click', ()=>{
+      state.showFinal = true;
+      renderStageArea();
+    });
+  }
+}
+
+function escapeHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+/* =========================================================
+   8) Final screen + submission
+   ========================================================= */
+function renderFinalScreen(){
+  const totalWeight = STAGE_ORDER.reduce((sum,k)=> sum + (state.terminated[k] ? 0 : computeStageScore(k).score), 0) / 3;
+  const conceptSummary = STAGE_ORDER.map(k=>{
+    if(state.terminated[k]) return `${STAGES[k].label}: (case review ended — 0 points)`;
+    const hit = CLUSTERS[k].filter(c=>state.matched[k].has(c.id)).map(c=>c.label);
+    return `${STAGES[k].label}: ${hit.length? hit.join(', ') : '(no concepts detected)'}`;
+  }).join('\n');
+
+  return `
+    <div class="final-screen">
+      <h2>Stage 2 Complete</h2>
+      <p style="color:var(--ink-soft); font-size:14px;">Average score: <strong>${totalWeight.toFixed(1)}%</strong></p>
+      <p style="font-size:13px; color:var(--ink-soft); white-space:pre-line; text-align:left; background:#F5F7FA; padding:12px 14px; border-radius:8px;">${conceptSummary}</p>
+      <div class="idbox">
+        <input id="studentName" type="text" placeholder="Name" value="${escapeHtml(state.studentName)}">
+        <input id="studentNumber" type="text" placeholder="Student ID" value="${escapeHtml(state.studentNumber)}">
+      </div>
+      <div style="display:flex; gap:8px; justify-content:center; margin-top:4px; flex-wrap:wrap;">
+        <button class="primary" id="submitBtn">Submit Results</button>
+        <button class="ghost" id="downloadBtn" type="button">Download Conversation (txt)</button>
+      </div>
+      <div id="submitStatus"></div>
+      <p style="font-size:11.5px; color:var(--ink-soft); margin-top:14px;">
+        Clicking "Submit Results" automatically records your results in your professor's Google Sheet.
+        "Download Conversation" saves the full conversation to your computer as a text file (separate from submission — you're welcome to do both).
+      </p>
+    </div>
+  `;
+}
+
+function bindFinalScreen(){
+  document.getElementById('submitBtn').addEventListener('click', submitResults);
+  document.getElementById('downloadBtn').addEventListener('click', downloadTranscript);
+}
+
+function buildTranscriptLines(){
+  const name = state.studentName || (document.getElementById('studentName')||{}).value || '';
+  const number = state.studentNumber || (document.getElementById('studentNumber')||{}).value || '';
+  const lines = [];
+  lines.push(`Good Banking Corporation Stage 2 Learning Record`);
+  lines.push(`Name: ${name}   Student ID: ${number}`);
+  lines.push(`Submitted: ${new Date().toLocaleString('en-US')}`);
+  lines.push('');
+  STAGE_ORDER.forEach(k=>{
+    lines.push(`===== ${STAGES[k].label} (Level ${state.level[k]}/3, ${state.terminated[k]?'Ended (0%)':computeStageScore(k).score+'%'}) =====`);
+    state.transcript[k].forEach(t=>{
+      lines.push(`[${t.role==='ai'?'AI':'Student'}] ${t.text}`);
+    });
+    lines.push('');
+  });
+  return { lines, name, number };
+}
+
+function downloadTranscript(){
+  const { lines, name, number } = buildTranscriptLines();
+  const blob = new Blob([lines.join('\n')], {type:'text/plain;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `GBC_Stage2_${name || 'student'}_${number || ''}.txt`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+function submitResults(){
+  const nameInput = document.getElementById('studentName');
+  const numberInput = document.getElementById('studentNumber');
+  const studentName = nameInput.value.trim();
+  const studentNumber = numberInput.value.trim();
+  const statusEl = document.getElementById('submitStatus');
+  if(!studentName || !studentNumber){
+    statusEl.textContent = 'Please enter both your name and student ID.';
+    statusEl.style.color = 'var(--red)';
+    return;
+  }
+
+  const payload = {
+    action: 'finalSubmit',
+    case: 'GBC Stage2 (EN)',
+    studentName,
+    studentNumber,
+    timestamp: new Date().toISOString(),
+    stageA_level: state.level.A, stageA_score: state.terminated.A ? 0 : computeStageScore('A').score, stageA_terminated: state.terminated.A,
+    stageB_level: state.level.B, stageB_score: state.terminated.B ? 0 : computeStageScore('B').score, stageB_terminated: state.terminated.B,
+    stageC_level: state.level.C, stageC_score: state.terminated.C ? 0 : computeStageScore('C').score, stageC_terminated: state.terminated.C,
+    conceptsA: [...state.matched.A].join('; '),
+    conceptsB: [...state.matched.B].join('; '),
+    conceptsC: [...state.matched.C].join('; '),
+    transcriptA: state.transcript.A.map(t=>`[${t.role}] ${t.text}`).join('\n---\n'),
+    transcriptB: state.transcript.B.map(t=>`[${t.role}] ${t.text}`).join('\n---\n'),
+    transcriptC: state.transcript.C.map(t=>`[${t.role}] ${t.text}`).join('\n---\n')
+  };
+
+  statusEl.textContent = 'Submitting...';
+  statusEl.style.color = 'var(--ink-soft)';
+
+  fetch(GEMINI_PROXY_URL, {
+    method:'POST',
+    headers:{'Content-Type':'text/plain'},
+    body: JSON.stringify(payload)
+  }).then(res => res.json()).then(data => {
+    if(data.error){
+      statusEl.textContent = 'Submission failed: ' + (data.message || 'unknown error') + ' — please contact your professor.';
+      statusEl.style.color = 'var(--red)';
+    } else {
+      statusEl.textContent = 'Submission complete. You may close this window.';
+      statusEl.style.color = 'var(--green)';
+    }
+  }).catch(()=>{
+    statusEl.textContent = 'An error occurred while submitting. Please try again.';
+    statusEl.style.color = 'var(--red)';
+  });
+}
+
+/* =========================================================
+   9) Initialization
+   ========================================================= */
+function renderAll(){
+  renderStageTabs();
+  renderStageArea();
+}
+
+document.querySelectorAll('.stage-tab').forEach(tab=>{
+  tab.addEventListener('click', ()=>{
+    if(tab.classList.contains('locked')) return;
+    state.current = tab.dataset.stage;
+    renderAll();
+  });
+});
+
+function confirmGate(){
+  const nameEl = document.getElementById('gateName');
+  const numEl = document.getElementById('gateNumber');
+  const statusEl = document.getElementById('gateStatus');
+  const name = nameEl.value.trim();
+  const number = numEl.value.trim();
+  if(!name || !number){
+    statusEl.textContent = 'Please enter both your name and student ID.';
+    return;
+  }
+  state.studentName = name;
+  state.studentNumber = number;
+  state.gateConfirmed = true;
+  statusEl.textContent = 'You can edit your name/ID at any time. Please double-check them once more on the final submission screen.';
+  statusEl.style.color = 'var(--green)';
+  document.getElementById('idGate').classList.add('confirmed');
+}
+document.getElementById('gateConfirmBtn').addEventListener('click', confirmGate);
+
+document.getElementById('gateName').addEventListener('input', (e)=>{ state.studentName = e.target.value.trim(); });
+document.getElementById('gateNumber').addEventListener('input', (e)=>{ state.studentNumber = e.target.value.trim(); });
+
+renderAll();
+
+/* Debug/testing hook — exposes internal state for QA; harmless in production */
+window.__debug = { state, CLUSTERS, STAGES, renderAll, handleSend, geminiJudge, localJudge, isOffTopic, isTooShort, stageFinished, wordCount, computeStageScore };
+</script>
+</body>
+</html>
